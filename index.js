@@ -1,38 +1,79 @@
-const Slack = require("@slack/bolt");
 require("dotenv").config();
-const express = require('express')
-const app = express()
+const express = require("express");
+const app = express();
+const http = require("http");
+// const createChannel = require("./controllers/createChannel");
+const externalInvite = require("./controllers/externalInvite");
 
-app.use(express.json())
+app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-const slackApp = new Slack.App({
-  signingSecret: process.env.SLACK_SIGNING_SECRET,
-  token: process.env.SLACK_BOT_TOKEN,
-});
 
-/* Create Channel with name and description */
-slackApp.client.conversations
-  .create({
-    name: "test-channel-5",
-    description: "Test Channel",
-  })
-  .then(async (conversation) => {
-    /* Get All Users */
-    const users = await slackApp.client.users.list();
+// app.post('/channel', createChannel)
+app.post('/channel', externalInvite)
 
-    /* Filter users that need to invite in channel */
-    const filteredUsers = users.members.filter(
-      (user) => user.profile.email === "tejassoni@york.ie"
-    );
 
-    /* Invite users to channel */
-    await slackApp.client.conversations.invite({
-      users: filteredUsers.map((user) => user.id).join(","), // Pass user ids comma saperated
-      channel: conversation.channel.id, // Pass channel id
-    });
-  })
-  .catch((err) => {
-    console.log("err:", err);
-  });
+var port = normalizePort(process.env.PORT || "3000");
+app.set("port", port);
 
+const server = http.createServer(app);
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on("error", onError);
+server.on("listening", onListening);
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== "listen") {
+    throw error;
+  }
+
+  var bind = typeof port === "string" ? "Pipe " + port : "Port " + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case "EACCES":
+      console.error(bind + " requires elevated privileges");
+      process.exit(1);
+      break;
+    case "EADDRINUSE":
+      console.error(bind + " is already in use");
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
+  console.log("Listening on " + bind);
+}
