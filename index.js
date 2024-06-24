@@ -4,6 +4,7 @@ const app = express();
 const http = require("http");
 // const createChannel = require("./controllers/createChannel");
 const externalInvite = require("./controllers/externalInvite");
+const test = require("./controllers/test");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -11,6 +12,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // app.post('/channel', createChannel)
 app.post('/channel', externalInvite)
+app.get('/test', test)
 
 
 var port = normalizePort(process.env.PORT || "3000");
