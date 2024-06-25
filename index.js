@@ -5,14 +5,22 @@ const http = require("http");
 // const createChannel = require("./controllers/createChannel");
 const externalInvite = require("./controllers/externalInvite");
 const test = require("./controllers/test");
+const docPicker = require("./controllers/docPicker");
+const path = require('path')
+
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+app.use(express.static(path.join(__dirname, 'public')));
 
 // app.post('/channel', createChannel)
-app.post('/channel', externalInvite)
 app.get('/test', test)
+app.post('/api/channel', externalInvite)
+app.get('/document-picker', docPicker)
 
 
 var port = normalizePort(process.env.PORT || "3000");
