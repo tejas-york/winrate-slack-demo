@@ -19,15 +19,79 @@ limitations under the License.
   <head>
     <title>Picker API Quickstart</title>
     <meta charset="utf-8" />
+    <style>
+      /* Basic button styles */
+      .drive-button {
+        display: flex;
+        align-items: center;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        background-color: #4285f4; /* Google blue */
+        color: white;
+        font-size: 16px;
+        font-family: Arial, sans-serif;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      /* Google Drive logo */
+      .drive-button img {
+        width: 24px;
+        height: 24px;
+        margin-right: 10px;
+      }
+
+      /* Hover effect */
+      .drive-button:hover {
+        background-color: #357ae8; /* Darker blue */
+      }
+
+      /* Focus effect */
+      .drive-button:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.5);
+      }
+
+      p {
+        font-size: larger;
+      }
+    </style>
   </head>
   <body>
-    <p>Picker API Quickstart</p>
+    <p>
+      Select file from google drive for channel: <b>winrate-demo-channel</b>
+    </p>
 
     <!--Add buttons to initiate auth sequence and sign out-->
-    <button id="authorize_button" onclick="handleAuthClick()">Authorize</button>
-    <button id="signout_button" onclick="handleSignoutClick()">Sign Out</button>
+    <button
+      id="authorize_button"
+      class="drive-button"
+      onclick="handleAuthClick()"
+    >
+      <img
+        src="https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_48dp.png"
+        alt="Google Drive Logo"
+      />
+      Open Google Drive
+    </button>
+    <!-- <button id="authorize_button" onclick="handleAuthClick()">
+      Connect to Google Drive
+    </button> -->
+
+    <br />
+
+    <button
+      id="signout_button"
+      class="drive-button"
+      onclick="handleSignoutClick()"
+    >
+      Sign Out
+    </button>
 
     <pre id="content" style="white-space: pre-wrap"></pre>
+
+    <div id="selected-files"></div>
 
     <script type="text/javascript">
       /* exported gapiLoaded */
@@ -169,7 +233,7 @@ limitations under the License.
         );
         console.log("pickerCallback  data:", data);
         if (data.action === google.picker.Action.PICKED) {
-          let text = `Picker response: \n${JSON.stringify(data, null, 2)}\n`;
+          /*  let text = `Picker response: \n${JSON.stringify(data, null, 2)}\n`;
           const document = data[google.picker.Response.DOCUMENTS][0];
           const fileId = document[google.picker.Document.ID];
           console.log(fileId);
@@ -183,7 +247,87 @@ limitations under the License.
             null,
             2
           )}\n`;
-          window.document.getElementById("content").innerText = text;
+          window.document.getElementById("content").innerText = text; */
+          const elements = [
+            {
+              type: "text",
+              text: "John Doe",
+              style: {
+                bold: true,
+                italic: true,
+              },
+            },
+            {
+              type: "text",
+              text: " attached document from the ",
+              style: {
+                italic: true,
+              },
+            },
+            {
+              type: "text",
+              text: "Google Drive.\n",
+              style: {
+                bold: true,
+                italic: true,
+              },
+            },
+          ];
+
+          data.docs.forEach((element) => {
+            const doc = document.createElement("iframe");
+            doc.src = element.embedUrl;
+            doc.height = "250";
+            doc.width = "250";
+            document.getElementById("selected-files").appendChild(doc);
+            document
+              .getElementById("selected-files")
+              .appendChild(document.createElement("br"));
+            document
+              .getElementById("selected-files")
+              .appendChild(document.createElement("br"));
+
+            elements.push({
+              type: "link",
+              url: element.embedUrl,
+              text: element.name,
+              style: {
+                italic: true,
+              },
+            });
+          });
+          const blocks = [
+            {
+              type: "rich_text",
+              elements: [
+                {
+                  type: "rich_text_quote",
+                  elements,
+                },
+              ],
+            },
+          ];
+
+          const raw = JSON.stringify({
+            channel: "C078Z36B6FR",
+            blocks,
+          });
+          const myHeaders = new Headers();
+          myHeaders.append("Content-Type", "application/json");
+
+          fetch("/send-message", {
+            method: "POST",
+            body: raw,
+            headers: myHeaders,
+            redirect: "follow",
+          })
+            .then(async (res) => await res.json())
+            .then((result) => {
+              console.log("pickerCallback  result:", result);
+            })
+            .catch((error) => {
+              console.log("pickerCallback  error:", error);
+            });
         }
       }
     </script>

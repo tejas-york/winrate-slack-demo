@@ -6,7 +6,8 @@ const http = require("http");
 const externalInvite = require("./controllers/externalInvite");
 const test = require("./controllers/test");
 const docPicker = require("./controllers/docPicker");
-const path = require('path')
+const path = require('path');
+const sendMessageInChannel = require("./controllers/sendMessageInChannel");
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -21,6 +22,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/test', test)
 app.post('/api/channel', externalInvite)
 app.get('/document-picker', docPicker)
+app.post('/send-message', sendMessageInChannel)
 
 
 var port = normalizePort(process.env.PORT || "3000");
