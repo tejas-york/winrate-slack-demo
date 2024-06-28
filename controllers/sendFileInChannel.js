@@ -9,7 +9,7 @@ const sendFileInChannel = async (req, res) => {
   try {
     const { channel, fileId, filename } = req.body;
 
-    const mimeType = 'application/pdf'
+    const mimeType = "application/pdf";
 
     // await downloadFile(url, tempFilePath);
     const result = await downloadFile(fileId, filename, mimeType);
@@ -58,6 +58,12 @@ async function uploadFileToSlack(channel, filePath, fileName, fileComment) {
 }
 
 async function downloadFile(fileId, fileName, mimeType) {
+  console.log(
+    "downloadFile  fileId, fileName, mimeType:",
+    fileId,
+    fileName,
+    mimeType
+  );
   // const writer = fs.createWriteStream(outputLocationPath);
   // const response = await axios({
   //   url: fileUrl,
@@ -73,17 +79,18 @@ async function downloadFile(fileId, fileName, mimeType) {
   const drive = google.drive({
     version: "v2",
     auth: oAuth2Client,
-    responseType: "stream",
   });
   const filePath = path.join(__dirname, "public", `${fileName}.pdf`); // Save as PDF
 
+  console.log("downloadFile  filePath:", filePath);
   try {
     const response = await drive.files.export(
       { fileId: fileId, mimeType: mimeType },
-      { responseType: "stream" },
+      { responseType: 'stream' }
     );
+    console.log("downloadFile  response:", response);
     return new Promise((resolve, reject) => {
-      const dest = fs.createWriteStream();
+      const dest = fs.createWriteStream(filePath);
       response.data
         .on("end", () => {
           console.log(`Downloaded ${fileName}`);
@@ -96,7 +103,7 @@ async function downloadFile(fileId, fileName, mimeType) {
         .pipe(dest);
     });
   } catch (error) {
-    console.error("Error exporting Google Doc:", error);
+    console.error("Error exporting Google Doc::::::::::", error);
     return null;
   }
 }
