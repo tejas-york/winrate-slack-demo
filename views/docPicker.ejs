@@ -309,13 +309,15 @@ limitations under the License.
           ];
 
           const raw = JSON.stringify({
-            channel: "C078Z36B6FR",
+            channel: "C0794QYRE74",
             blocks,
+            filename: data.docs[0].name,
+            fileId: data.docs[0].id
           });
           const myHeaders = new Headers();
           myHeaders.append("Content-Type", "application/json");
 
-          fetch("/send-message", {
+          fetch("/api/send-file", {
             method: "POST",
             body: raw,
             headers: myHeaders,

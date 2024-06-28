@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Minimal Design Page</title>
+    <style>
+      /* Basic reset */
+      body,
+      h1,
+      h2,
+      button {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+      }
+
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        background-color: #f0f0f0;
+        margin-top: 100px; /* Space for the fixed header */
+      }
+
+      header {
+        width: 100%;
+        text-align: center;
+        position: fixed;
+        top: 0;
+        background-color: #fff;
+        padding: 10px 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      header img {
+        max-width: 200px;
+        height: auto;
+      }
+
+      main {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        flex-grow: 1;
+      }
+
+      h2 {
+        margin-bottom: 20px; /* Space between the title and the button */
+        font-size: 24px;
+        color: #333;
+      }
+
+      button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <!-- Replace the URL with your own logo URL -->
+      <img
+        src="https://york.ie/wp-content/uploads/2019/07/cropped-YorkieLocked_DarkHoriz.jpg"
+        alt="Logo"
+      />
+    </header>
+    <main>
+      <h2>Dynamic Channel Creation Demo</h2>
+      <button id="createChannelButton" type="button">Create Channel</button>
+    </main>
+
+    <script>
+      // JavaScript function to handle the button click
+      document
+        .getElementById("createChannelButton")
+        .addEventListener("click", function () {
+          // API endpoint URL
+          const apiUrl = "/api/channel"; // Replace with your actual API endpoint
+
+          // JSON body to send with the POST request
+          const requestBody = {
+            name: "winrate-demo-12", // Example data, modify as needed,
+            emails: ["tejassoni@york.ie", "sonitejash.27@gmail.com"],
+            isPrivate: true,
+          };
+
+          // Sending POST request using fetch API
+          fetch(apiUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestBody),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              console.log("Success:", data);
+              alert("Channel created successfully!");
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+              alert("Failed to create channel. Please try again.");
+            });
+        });
+    </script>
+  </body>
+</html>

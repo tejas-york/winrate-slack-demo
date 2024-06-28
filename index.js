@@ -8,6 +8,9 @@ const test = require("./controllers/test");
 const docPicker = require("./controllers/docPicker");
 const path = require('path');
 const sendMessageInChannel = require("./controllers/sendMessageInChannel");
+const sendFileInChannel = require("./controllers/sendFileInChannel");
+const createChannelRenderer = require("./controllers/createChannelRenderer");
+const createCanvas = require("./controllers/createCanvas");
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -22,7 +25,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/test', test)
 app.post('/api/channel', externalInvite)
 app.get('/document-picker', docPicker)
-app.post('/send-message', sendMessageInChannel)
+app.get('/create-channel', createChannelRenderer)
+app.post('/api/send-message', sendMessageInChannel)
+app.post('/api/send-file', sendFileInChannel)
+app.post('/api/canvas', createCanvas)
 
 
 var port = normalizePort(process.env.PORT || "3000");

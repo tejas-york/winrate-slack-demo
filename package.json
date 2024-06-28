@@ -10,9 +10,13 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@google-cloud/local-auth": "^3.0.1",
     "@slack/bolt": "^3.19.0",
+    "@slack/web-api": "^7.2.0",
+    "axios": "^1.7.2",
     "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "googleapis": "^140.0.1"
   }
 }
