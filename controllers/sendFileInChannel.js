@@ -1,4 +1,4 @@
-const slackApp = require(".");
+const slackApp = require(".").slackApp;
 const axios = require("axios");
 const fs = require("fs");
 const { google } = require("googleapis");
@@ -27,7 +27,7 @@ const sendFileInChannel = async (req, res) => {
       result,
     });
   } catch (error) {
-    console.error(`Error: ${error}`);
+    console.error(`Error:::::::::: ${error}`);
     res.status(400).json({
       message: "Something went wrong!, " + error.message,
     });
@@ -76,34 +76,42 @@ async function downloadFile(fileId, fileName, mimeType) {
   //   writer.on("finish", resolve);
   //   writer.on("error", reject);
   // });
-  const drive = google.drive({
-    version: "v2",
-    auth: oAuth2Client,
-  });
-  const filePath = path.join(__dirname, "public", `${fileName}.pdf`); // Save as PDF
-
-  console.log("downloadFile  filePath:", filePath);
   try {
+    const drive = google.drive({ version: "v3", auth: oAuth2Client });
+    const sanitizedFileName = fileName
+      .replace(/[^a-z0-9]/gi, "_")
+      .toLowerCase(); // Sanitize filename
+    const filePath = path.join(
+      __dirname,
+      "../public",
+      `${sanitizedFileName}.pdf`
+    ); // Save as PDF
+
     const response = await drive.files.export(
       { fileId: fileId, mimeType: mimeType },
-      { responseType: 'stream' }
+      { responseType: "stream" }
     );
-    console.log("downloadFile  response:", response);
+
+    console.log("Response::::::::", response);
+
     return new Promise((resolve, reject) => {
       const dest = fs.createWriteStream(filePath);
       response.data
         .on("end", () => {
-          console.log(`Downloaded ${fileName}`);
+          console.log(`Downloaded ${fileName} as ${sanitizedFileName}.pdf`);
           resolve(filePath);
         })
+        .on("data", (chunk) => {
+          console.log("~~~~~~~", chunk);
+        })
         .on("error", (err) => {
-          console.error("Error downloading file:", err);
+          console.error("Error downloading file:::::::", err);
           reject(err);
         })
         .pipe(dest);
     });
   } catch (error) {
-    console.error("Error exporting Google Doc::::::::::", error);
+    console.error("Error exporting Google Doc:::::::", error);
     return null;
   }
 }

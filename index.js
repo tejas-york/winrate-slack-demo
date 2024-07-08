@@ -6,30 +6,29 @@ const http = require("http");
 const externalInvite = require("./controllers/externalInvite");
 const test = require("./controllers/test");
 const docPicker = require("./controllers/docPicker");
-const path = require('path');
+const path = require("path");
 const sendMessageInChannel = require("./controllers/sendMessageInChannel");
 const sendFileInChannel = require("./controllers/sendFileInChannel");
 const createChannelRenderer = require("./controllers/createChannelRenderer");
 const createCanvas = require("./controllers/createCanvas");
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "ejs");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 
 // app.post('/channel', createChannel)
-app.get('/test', test)
-app.post('/api/channel', externalInvite)
-app.get('/document-picker', docPicker)
-app.get('/create-channel', createChannelRenderer)
-app.post('/api/send-message', sendMessageInChannel)
-app.post('/api/send-file', sendFileInChannel)
-app.post('/api/canvas', createCanvas)
-
+app.get("/test", test);
+app.post("/api/channel", externalInvite);
+app.get("/document-picker", (req, res) => res.render("docPicker"));
+app.get("/create-channel", (req, res) => res.render("createChannel"));
+app.post("/api/send-message", sendMessageInChannel);
+app.post("/api/send-file", sendFileInChannel);
+app.post("/api/canvas", createCanvas);
 
 var port = normalizePort(process.env.PORT || "3000");
 app.set("port", port);

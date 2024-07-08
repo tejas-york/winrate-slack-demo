@@ -1,4 +1,4 @@
-const webClient = require(".");
+const webClient = require(".").webClient;
 
 const createCanvas = async (req, res) => {
   try {

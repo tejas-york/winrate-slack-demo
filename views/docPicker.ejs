@@ -147,6 +147,7 @@ limitations under the License.
           scope: SCOPES,
           callback: "", // defined later
         });
+        console.log("Token:::::::::::::", tokenClient);
         gisInited = true;
         maybeEnableButtons();
       }
@@ -166,6 +167,7 @@ limitations under the License.
        */
       function handleAuthClick() {
         tokenClient.callback = async (response) => {
+          console.log("Callback response ::::::::", response);
           if (response.error !== undefined) {
             throw response;
           }
@@ -248,6 +250,13 @@ limitations under the License.
             2
           )}\n`;
           window.document.getElementById("content").innerText = text; */
+          const pickedDocument = data[google.picker.Response.DOCUMENTS][0];
+          const fileId = pickedDocument[google.picker.Document.ID];
+          const res = await gapi.client.drive.files.get({
+            fileId: fileId,
+            fields: "*",
+          });
+          console.log("pickerCallback  res:", res);
           const elements = [
             {
               type: "text",
@@ -274,6 +283,7 @@ limitations under the License.
             },
           ];
 
+          const urls = [];
           data.docs.forEach((element) => {
             const doc = document.createElement("iframe");
             doc.src = element.embedUrl;
@@ -287,6 +297,7 @@ limitations under the License.
               .getElementById("selected-files")
               .appendChild(document.createElement("br"));
 
+            urls.push({ url: element.embedUrl, name: element.name });
             elements.push({
               type: "link",
               url: element.embedUrl,
@@ -309,15 +320,17 @@ limitations under the License.
           ];
 
           const raw = JSON.stringify({
-            channel: "C0794QYRE74",
+            channel: "C07BB6Z1BTP",
             blocks,
+            urls,
             filename: data.docs[0].name,
-            fileId: data.docs[0].id
+            fileId: data.docs[0].id,
+            mimeType: data.docs[0].mimeType,
           });
           const myHeaders = new Headers();
           myHeaders.append("Content-Type", "application/json");
 
-          fetch("/api/send-file", {
+          fetch("/api/send-message", {
             method: "POST",
             body: raw,
             headers: myHeaders,
@@ -326,6 +339,7 @@ limitations under the License.
             .then(async (res) => await res.json())
             .then((result) => {
               console.log("pickerCallback  result:", result);
+              alert("Document attached successfully!")
             })
             .catch((error) => {
               console.log("pickerCallback  error:", error);

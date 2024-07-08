@@ -1,4 +1,5 @@
-const slackApp = require(".");
+const slackApp = require(".").slackApp;
+const { webClient } = require(".");
 
 const externalInvite = async (req, res) => {
   try {
@@ -10,7 +11,7 @@ const externalInvite = async (req, res) => {
 
     /* Get All Users from this workspace */
     const users = await slackApp.client.users.list();
-
+    console.log("USERS:::::", users);
     /* Filter users that need to invite in channel and in the same workspace */
     const internalUsers = users.members.filter(
       (user) => emails.includes(user.profile.email) && user.profile.email
@@ -44,8 +45,17 @@ const externalInvite = async (req, res) => {
         channel: conversation.channel.id,
       });
     }
+    const canvas = await webClient.conversations.canvases.create({
+      channel_id: conversation.channel.id,
+      document_content: {
+        markdown: '# Shared Links\n # Notes\n',
+        type: 'markdown'
+      },
+    })
     res.status(200).json({
       message: "Invitation sent successfully.",
+      conversation,
+      canvas
     });
   } catch (error) {
     res.status(400).json({

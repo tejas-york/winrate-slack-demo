@@ -10,5 +10,5 @@ const slackApp = new App({
 
 const webClient = new WebClient(process.env.SLACK_BOT_TOKEN);
 
-module.exports = slackApp;
-module.exports = webClient;
+module.exports = { slackApp, webClient };
+// module.exports = webClient;
