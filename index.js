@@ -5,11 +5,9 @@ const http = require("http");
 // const createChannel = require("./controllers/createChannel");
 const externalInvite = require("./controllers/externalInvite");
 const test = require("./controllers/test");
-const docPicker = require("./controllers/docPicker");
 const path = require("path");
 const sendMessageInChannel = require("./controllers/sendMessageInChannel");
 const sendFileInChannel = require("./controllers/sendFileInChannel");
-const createChannelRenderer = require("./controllers/createChannelRenderer");
 const createCanvas = require("./controllers/createCanvas");
 
 // view engine setup
@@ -29,6 +27,11 @@ app.get("/create-channel", (req, res) => res.render("createChannel"));
 app.post("/api/send-message", sendMessageInChannel);
 app.post("/api/send-file", sendFileInChannel);
 app.post("/api/canvas", createCanvas);
+
+app.post("/api/url-verification", (req, res) => {
+  console.log("REQ BODY", req.body);
+  res.send(req.body.challenge);
+});
 
 var port = normalizePort(process.env.PORT || "3000");
 app.set("port", port);
