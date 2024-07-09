@@ -11,6 +11,7 @@ const sendFileInChannel = require("./controllers/sendFileInChannel");
 const createCanvas = require("./controllers/createCanvas");
 const slackEventHandler = require("./controllers/slackEventHandler");
 const connect = require("./database");
+const getLatestMessages = require("./controllers/getLatestMessages");
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -31,6 +32,8 @@ app.post("/api/send-file", sendFileInChannel);
 app.post("/api/canvas", createCanvas);
 
 app.post("/api/event-handler", slackEventHandler);
+app.get("/latest-messages", (req, res) => res.render("sharedLinks"));
+app.get("/api/latest-messages", getLatestMessages);
 
 var port = normalizePort(process.env.PORT || "3000");
 app.set("port", port);

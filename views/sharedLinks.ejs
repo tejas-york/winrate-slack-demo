@@ -36,27 +36,61 @@
         margin: 5px 0 0;
         color: #666;
       }
+      .add {
+        color: #00a400;
+      }
+      .delete {
+        color: #b60000;
+      }
     </style>
   </head>
   <body>
     <h1>Shared Links</h1>
-    <ul class="link-list">
-      <li class="link-item">
-        <a href="https://example.com/article1"
-          >Great article on web development</a
-        >
-        <p>Shared by: Alice</p>
-      </li>
-      <li class="link-item">
-        <a href="https://example.com/article2">Interesting read on AI</a>
-        <p>Shared by: Bob</p>
-      </li>
-      <li class="link-item">
-        <a href="https://example.com/article3"
-          >Insights on blockchain technology</a
-        >
-        <p>Shared by: Charlie</p>
-      </li>
-    </ul>
+    <ul class="link-list" id="link-list"></ul>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const requestOptions = {
+          method: "GET",
+          redirect: "follow",
+        };
+        window.setInterval(() => {
+          fetch("api/latest-messages", requestOptions)
+            .then(async (response) => await response.json())
+            .then((result) => {
+              try {
+                const links = result.data;
+                console.log(".then  links:", links);
+                const linkList = document.getElementById("link-list");
+
+                linkList.innerHTML = "";
+                links.forEach((link) => {
+                  const listItem = document.createElement("li");
+                  listItem.classList.add("link-item");
+
+                  const linkElement = document.createElement("a");
+                  linkElement.href = link.url;
+                  linkElement.textContent = link.title || link.url;
+
+                  const nameElement = document.createElement("p");
+                  if (link.subtype && link.subtype === "message_deleted") {
+                    nameElement.innerHTML =
+                      '<span class="delete">Deleted by:</span> Tejas Soni';
+                  } else {
+                    nameElement.innerHTML =
+                      '<span class="add">Shared by:</span> Tejas Soni';
+                  }
+
+                  listItem.appendChild(linkElement);
+                  listItem.appendChild(nameElement);
+                  linkList.appendChild(listItem);
+                });
+              } catch (error) {
+                console.log(".then  error:", error);
+              }
+            })
+            .catch((error) => console.error(error));
+        }, 1000);
+      });
+    </script>
   </body>
 </html>
