@@ -9,6 +9,8 @@ const path = require("path");
 const sendMessageInChannel = require("./controllers/sendMessageInChannel");
 const sendFileInChannel = require("./controllers/sendFileInChannel");
 const createCanvas = require("./controllers/createCanvas");
+const slackEventHandler = require("./controllers/slackEventHandler");
+const connect = require("./database");
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -28,10 +30,7 @@ app.post("/api/send-message", sendMessageInChannel);
 app.post("/api/send-file", sendFileInChannel);
 app.post("/api/canvas", createCanvas);
 
-app.post("/api/url-verification", (req, res) => {
-  console.log("REQ BODY", req.body);
-  res.send(req.body.challenge);
-});
+app.post("/api/event-handler", slackEventHandler);
 
 var port = normalizePort(process.env.PORT || "3000");
 app.set("port", port);
@@ -92,8 +91,13 @@ function onError(error) {
  * Event listener for HTTP server "listening" event.
  */
 
-function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
-  console.log("Listening on " + bind);
+async function onListening() {
+  try {
+    var addr = server.address();
+    var bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
+    console.log("Listening on " + bind);
+    await connect();
+  } catch (error) {
+    console.error("error:", error);
+  }
 }
