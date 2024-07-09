@@ -12,7 +12,9 @@ const slackEventHandler = async (req, res) => {
     console.log("slackEventHandler  event.type:", event.type);
     /* Handle message event */
     if (type === "event_callback" && event.type === "message") {
-      await new webhookLogs({ event }).save(); // Save event log in datanase
+      console.log("slackEventHandler  event:", event);
+      const log = await new webhookLogs({ event }).save(); // Save event log in datanase
+      console.log("slackEventHandler  log:", log);
     }
 
     return res.status(200).json({
