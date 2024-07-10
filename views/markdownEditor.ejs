@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Markdown Editor Integration</title>
+    <!-- EasyMDE CSS -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/easymde/dist/easymde.min.css"
+    />
+    <style>
+      /* Style for the button */
+      #get-content-btn {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      .channel-name-input {
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 10px 20px;
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Container for the Markdown editor -->
+    <div id="editor-container">
+      <textarea id="markdown-editor"></textarea>
+    </div>
+
+    <!-- Button to get content -->
+    <input
+      type="text"
+      class="channel-name-input"
+      id="channel-name"
+      placeholder="Enter Channel Name"
+    />
+    <button id="get-content-btn">Create Channel With Canvas</button>
+
+    <!-- EasyMDE JS -->
+    <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
+    <script>
+      // Initialize EasyMDE
+      var easyMDE = new EasyMDE({
+        element: document.getElementById("markdown-editor"),
+        maxHeight: "500px",
+        sideBySideFullscreen: false,
+      });
+
+      const myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+
+      const payload = {
+        emails: ["tejassoni@york.ie"],
+        name: "",
+        isPrivate: false,
+        markdownContent: "",
+      };
+
+      // Function to get the content and store it in a variable
+      document
+        .getElementById("get-content-btn")
+        .addEventListener("click", function () {
+          let name = document.getElementById("channel-name").value;
+          var markdownContent = easyMDE.value();
+          console.log("Markdown Content:", markdownContent);
+          payload.name = name;
+          payload.markdown = markdownContent;
+          console.log(payload);
+          const raw = JSON.stringify(payload);
+
+          const requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: raw,
+            redirect: "follow",
+          };
+          fetch("http://localhost:3000/api/channel", requestOptions)
+            .then((response) => response.text())
+            .then((result) => {
+              alert(
+                result.message || "Successfully created channel with canvas!"
+              );
+            })
+            .catch((error) => {
+              alert(error.message || "Something went wrong!");
+            });
+          // You can now use the markdownContent variable as needed
+        });
+    </script>
+  </body>
+</html>

@@ -22,17 +22,19 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use(express.static(path.join(__dirname, "public")));
 
-// app.post('/channel', createChannel)
-app.get("/test", test);
-app.post("/api/channel", externalInvite);
+/* Views */
 app.get("/document-picker", (req, res) => res.render("docPicker"));
 app.get("/create-channel", (req, res) => res.render("createChannel"));
+app.get("/latest-messages", (req, res) => res.render("sharedLinks"));
+app.get("/markdown-editor", (req, res) => res.render("markdownEditor"));
+
+/* Controllers */
+app.get("/test", test);
+app.post("/api/channel", externalInvite);
 app.post("/api/send-message", sendMessageInChannel);
 app.post("/api/send-file", sendFileInChannel);
 app.post("/api/canvas", createCanvas);
-
 app.post("/api/event-handler", slackEventHandler);
-app.get("/latest-messages", (req, res) => res.render("sharedLinks"));
 app.get("/api/latest-messages", getLatestMessages);
 
 var port = normalizePort(process.env.PORT || "3000");
