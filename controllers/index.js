@@ -8,7 +8,12 @@ const slackApp = new App({
   token: process.env.SLACK_BOT_TOKEN,
 });
 
+const slackUserApp = new App({
+  signingSecret: process.env.SLACK_SIGNING_SECRET,
+  token: process.env.SLACK_USER_TOKEN,
+});
+
 const webClient = new WebClient(process.env.SLACK_BOT_TOKEN);
 
-module.exports = { slackApp, webClient };
+module.exports = { slackApp, webClient, slackUserApp };
 // module.exports = webClient;

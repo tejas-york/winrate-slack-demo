@@ -12,6 +12,9 @@ const createCanvas = require("./controllers/createCanvas");
 const slackEventHandler = require("./controllers/slackEventHandler");
 const connect = require("./database");
 const getLatestMessages = require("./controllers/getLatestMessages");
+const renameChannel = require("./controllers/renameChannel");
+const listAllChannels = require("./controllers/listAllChannels");
+const archiveChannel = require("./controllers/archiveChannel");
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -22,20 +25,24 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use(express.static(path.join(__dirname, "public")));
 
-/* Views */
-app.get("/document-picker", (req, res) => res.render("docPicker"));
-app.get("/create-channel", (req, res) => res.render("createChannel"));
-app.get("/latest-messages", (req, res) => res.render("sharedLinks"));
-app.get("/markdown-editor", (req, res) => res.render("markdownEditor"));
+/* View Routes */
+app.get("/document-picker", (_, res) => res.render("docPicker"));
+app.get("/create-channel", (_, res) => res.render("createChannel"));
+app.get("/latest-messages", (_, res) => res.render("sharedLinks"));
+app.get("/markdown-editor", (_, res) => res.render("markdownEditor"));
+app.get("/channel-list", (_, res) => res.render("channelList"));
 
-/* Controllers */
-app.get("/test", test);
+/* Controller Routes */
+app.get("/api/test", test);
 app.post("/api/channel", externalInvite);
 app.post("/api/send-message", sendMessageInChannel);
 app.post("/api/send-file", sendFileInChannel);
 app.post("/api/canvas", createCanvas);
 app.post("/api/event-handler", slackEventHandler);
 app.get("/api/latest-messages", getLatestMessages);
+app.put("/api/rename-channel/:channel", renameChannel);
+app.get("/api/list-all-channels", listAllChannels);
+app.delete("/api/archive-channel/:channel", archiveChannel);
 
 var port = normalizePort(process.env.PORT || "3000");
 app.set("port", port);

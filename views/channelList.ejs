@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Full-Screen Item List with API</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <style>
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+      }
+      .container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+      .header {
+        background-color: #4caf50;
+        color: white;
+        width: 100%;
+        text-align: center;
+        padding: 10px 0;
+      }
+      .item-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        flex: 1;
+        overflow-y: auto;
+      }
+      .item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15px;
+        border-bottom: 1px solid #ddd;
+      }
+      .item:last-child {
+        border-bottom: none;
+      }
+      .item .icon {
+        margin-right: 10px;
+        font-size: 1.2em;
+        color: #333;
+      }
+      .item .name {
+        flex: 1;
+        font-size: 1.1em;
+      }
+      .item .archive-button {
+        background-color: #f44336;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        margin: 10px;
+      }
+      .item .archive-button:hover {
+        background-color: #d32f2f;
+      }
+      .item .won-button {
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      .item .won-button:hover {
+        background-color: #3d8c40;
+      }
+      .next-page-button {
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        margin: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      .next-page-button:hover {
+        background-color: #45a049;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h2>Channels</h2>
+      </div>
+      <ul class="item-list" id="item-list">
+        <!-- Items will be populated here dynamically -->
+      </ul>
+      <button
+        id="next-page-button"
+        class="next-page-button"
+        style="display: none"
+        onclick="fetchNextPage()"
+      >
+        Next Page
+      </button>
+    </div>
+
+    <script>
+      let nextCursor = null;
+
+      document.addEventListener("DOMContentLoaded", () => {
+        fetchItems();
+      });
+
+      function fetchItems(cursor = "") {
+        fetch(`/api/list-all-channels?
+            user=${"U079LK35DLG"}&
+            types=private_channel,public_channel&
+            exclude_archived=true&
+            cursor=${cursor}`)
+          .then((response) => response.json())
+          .then((data) => {
+            const itemList = document.getElementById("item-list");
+            itemList.innerHTML = ""; // Clear existing items only on first fetch
+            const channels = data.channelInfo.channels;
+            channels.forEach((item) => {
+              const listItem = document.createElement("li");
+              listItem.classList.add("item");
+
+              const icon = document.createElement("span");
+              icon.classList.add("icon");
+              icon.innerHTML = item.is_private
+                ? '<i class="fas fa-lock"></i>'
+                : '<i class="fas fa-hashtag"></i>';
+
+              const name = document.createElement("span");
+              name.classList.add("name");
+              name.textContent = item.name;
+
+              const archiveButton = document.createElement("button");
+              archiveButton.classList.add("archive-button");
+              archiveButton.textContent = "Closed Lost";
+              archiveButton.onclick = () => confirmArchive(item.id, listItem);
+
+              const wonButton = document.createElement("button");
+              wonButton.classList.add("won-button");
+              wonButton.textContent = "Closed Won";
+              wonButton.onclick = () => confirmWon(item.id, item.name, name);
+
+              listItem.appendChild(icon);
+              listItem.appendChild(name);
+              listItem.appendChild(wonButton);
+              listItem.appendChild(archiveButton);
+
+              itemList.appendChild(listItem);
+            });
+
+            nextCursor = data.channelInfo.response_metadata.next_cursor || null;
+            const nextPageButton = document.getElementById("next-page-button");
+            if (nextCursor) {
+              nextPageButton.style.display = "block";
+            } else {
+              nextPageButton.style.display = "none";
+            }
+          })
+          .catch((error) => console.error("Error fetching items:", error));
+      }
+
+      function fetchNextPage() {
+        if (nextCursor) {
+          fetchItems(nextCursor);
+        }
+      }
+
+      function confirmArchive(itemId, listItem) {
+        const confirmation = confirm(
+          "Are you sure you want to archive this item?"
+        );
+        if (confirmation) {
+          archiveItem(itemId, listItem);
+        }
+      }
+
+      function confirmWon(itemId, name, nameElement) {
+        const confirmation = confirm(
+          "Are you sure you want to confirm the deal?"
+        );
+        console.log("confirmWon  confirmation:", confirmation);
+        if (confirmation) {
+          wonItem(itemId, nameElement, name);
+        }
+      }
+
+      function archiveItem(itemId, listItem) {
+        fetch(`api/archive-channel/${itemId}`, {
+          method: "DELETE",
+        })
+          .then((response) => {
+            if (response.ok) {
+              listItem.style.display = "none";
+              alert("Channel archived!");
+            } else {
+              alert("Failed to archive item.");
+            }
+          })
+          .catch((error) => console.error("Error archiving item:", error));
+      }
+      const myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+
+      function wonItem(itemId, nameElement, name) {
+        const updatedName = `${name}-won`;
+        fetch(`api/rename-channel/${itemId}`, {
+          method: "PUT",
+          body: JSON.stringify({
+            name: updatedName,
+          }),
+          headers: myHeaders,
+        })
+          .then((response) => {
+            if (response.ok) {
+              nameElement.textContent = updatedName;
+              alert("Channel renamed!");
+            } else {
+              alert("Failed to archive item.");
+            }
+          })
+          .catch((error) => console.error("Error archiving item:", error));
+      }
+    </script>
+  </body>
+</html>
