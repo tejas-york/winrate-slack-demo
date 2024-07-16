@@ -1,6 +1,13 @@
 const slackApp = require(".").slackApp;
 const { webClient } = require(".");
 
+/**
+ * @description Create channel and invite external channel with 
+ * @param emails array
+ * @param name string
+ * @param isPrivate boolean
+ * @param markdown string
+ */
 const externalInvite = async (req, res) => {
   try {
     const { emails, name, isPrivate, markdown } = req.body;

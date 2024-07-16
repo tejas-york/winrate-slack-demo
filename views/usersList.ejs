@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>All Users</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        margin: 0;
+        padding: 20px;
+        color: #333;
+      }
+      h1 {
+        text-align: center;
+        color: #444;
+      }
+      .user-list {
+        list-style-type: none;
+        padding: 0;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      .user-item {
+        display: flex;
+        align-items: center;
+        background-color: #fff;
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 10px;
+        transition: transform 0.2s;
+      }
+      .user-item:hover {
+        transform: translateY(-2px);
+      }
+      .user-item img {
+        border-radius: 50%;
+        margin-right: 15px;
+        border: 2px solid #ddd;
+      }
+      .user-item span {
+        font-size: 16px;
+        font-weight: 600;
+        color: #555;
+      }
+      .next-page-button {
+        display: block;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: 600;
+        border-radius: 8px;
+        margin: 20px auto;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+      .next-page-button:hover {
+        background-color: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>All Users</h1>
+    <ul class="user-list" id="userList"></ul>
+    <button class="next-page-button" id="nextPageButton">Next Page</button>
+
+    <script>
+      let nextCursor = "";
+
+      function fetchUsers(cursor = "") {
+        const url = cursor
+          ? `/api/list-all-users?limit=10&cursor=${cursor}`
+          : "/api/list-all-users?limit=10";
+        fetch(url)
+          .then((response) => response.json())
+          .then((data) => {
+            const userList = document.getElementById("userList");
+            const users = data.data.members;
+            nextCursor = data.data.response_metadata.next_cursor || "";
+
+            users.forEach((user) => {
+              const listItem = document.createElement("li");
+              listItem.className = "user-item";
+
+              const img = document.createElement("img");
+              img.src = user.profile.image_72;
+              img.alt = `${user.name}'s profile picture`;
+              img.width = 50;
+              img.height = 50;
+
+              const name = document.createElement("span");
+              name.textContent = user.name;
+
+              listItem.appendChild(img);
+              listItem.appendChild(name);
+              userList.appendChild(listItem);
+            });
+
+            document.getElementById("nextPageButton").disabled = !nextCursor;
+          })
+          .catch((error) => console.error("Error fetching users:", error));
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        fetchUsers();
+
+        document
+          .getElementById("nextPageButton")
+          .addEventListener("click", () => {
+            if (nextCursor) {
+              fetchUsers(nextCursor);
+            }
+          });
+      });
+    </script>
+  </body>
+</html>
