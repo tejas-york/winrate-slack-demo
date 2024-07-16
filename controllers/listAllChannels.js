@@ -1,5 +1,6 @@
 const { slackUserApp, slackApp } = require(".");
 
+/* List all channels user has access to */
 const listAllChannels = async (req, res) => {
   try {
     const { limit, ...rest } = req.query;
