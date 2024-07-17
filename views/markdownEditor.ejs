@@ -28,6 +28,54 @@
         padding: 10px 20px;
         font-size: 16px;
       }
+
+      /* Style for the list container */
+      #list-container {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        width: 200px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        padding: 10px;
+        overflow-y: auto;
+        max-height: 80vh;
+      }
+
+      .list-item {
+        cursor: pointer;
+        padding: 10px;
+        margin-bottom: 5px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        transition: background-color 0.3s, border-color 0.3s;
+      }
+
+      .list-item:hover {
+        background-color: #f0f0f0;
+        border-color: #bbb;
+      }
+
+      #editor-container {
+        margin-left: 240px; /* Adjust margin to leave space for the list */
+        padding: 20px;
+      }
+
+      /* Adding some general styles for body and container */
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f9f9f9;
+        margin: 0;
+        padding: 0;
+      }
+
+      #editor-container {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
     </style>
   </head>
   <body>
@@ -36,7 +84,10 @@
       <textarea id="markdown-editor"></textarea>
     </div>
 
-    <!-- Button to get content -->
+    <!-- Container for the list items -->
+    <div id="list-container"></div>
+
+    <!-- Input and Button to get content -->
     <input
       type="text"
       class="channel-name-input"
@@ -64,6 +115,120 @@
         isPrivate: false,
         markdownContent: "",
       };
+
+      // Array of list items
+      const listItems = [
+        {
+          name: "Simple Sales Room",
+          content: `# Client Sales Room
+Welcome to the sales room for Client XYZ. Here you can find all the relevant information and documentation.
+## Client Information
+- **Client Name:** Client XYZ
+- **Industry:** Technology
+- **Key Contact:** John Doe
+- **Email:** john.doe@example.com
+- **Phone:** +123 456 7890
+- **Address:** 123 Tech Street, Silicon Valley, CA
+## Communication Logs
+### Recent Interactions:
+1. **2024-06-20:** Call with John Doe about project requirements.
+2. **2024-06-18:** Email sent with proposal draft.
+## Upcoming Meetings
+- **2024-06-27:** Project kickoff meeting at 10:00 AM
+## Documentation
+Upload and manage client-related documents here.
+- **Uploaded Documents:**
+  - Proposal.pdf
+  - Contract.docx
+## Notes and Tasks
+### Notes:
+- Discuss budget approval in the next meeting.
+- Follow up on the contract signature.
+### Tasks:
+1. Prepare the final proposal - **Due:** 2024-06-25
+2. Schedule product demo - **Due:** 2024-06-28`,
+        },
+        {
+          name: "Sales Room With Image",
+          content: `![logo](https://png.pngtree.com/png-vector/20230223/ourmid/pngtree-modern-demo-logo-vector-file-png-image_6614515.png)
+# Client Sales Room
+Welcome to the sales room for Client XYZ. Here you can find all the relevant information and documentation.
+### Client Information
+- **Client Name:** Client XYZ
+- **Industry:** Technology
+- **Key Contact:** John Doe
+- **Email:** john.doe@example.com
+- **Phone:** +123 456 7890
+- **Address:** 123 Tech Street, Silicon Valley, CA
+## Communication Logs
+### Recent Interactions:
+1. **2024-06-20:** Call with John Doe about project requirements.
+2. **2024-06-18:** Email sent with proposal draft.
+## Upcoming Meetings
+- **2024-06-27:** Project kickoff meeting at 10:00 AM
+## Documentation
+Upload and manage client-related documents here.
+- **Uploaded Documents:**
+  - Proposal.pdf
+  - Contract.docx
+## Notes and Tasks
+### Notes:
+- Discuss budget approval in the next meeting.
+- Follow up on the contract signature.
+### Tasks:
+1. Prepare the final proposal - **Due:** 2024-06-25
+2. Schedule product demo - **Due:** 2024-06-28`,
+        },
+        {
+          name: "Sales Room With Attachments",
+          content: `# Client Sales Room
+Welcome to the sales room for Client XYZ. Here you can find all the relevant information and documentation.
+## Client Information
+- **Client Name:** Client XYZ
+- **Industry:** Technology
+- **Key Contact:** John Doe
+- **Email:** john.doe@example.com
+- **Phone:** +123 456 7890
+- **Address:** 123 Tech Street, Silicon Valley, CA
+## Communication Logs
+### Recent Interactions:
+1. **2024-06-20:** Call with John Doe about project requirements.
+2. **2024-06-18:** Email sent with proposal draft.
+## Upcoming Meetings
+- **2024-06-27:** Project kickoff meeting at 10:00 AM
+## Documentation
+Upload and manage client-related documents here.
+- **Uploaded Documents:**
+  - Proposal.pdf
+  - Contract.docx
+## Video Links
+Upload and manage video links related to the client here.
+- **Uploaded Video Links:**
+  - [Product Demo](https://www.youtube.com/watch?v=-b_A_iubyGk)
+  - [Client Testimonial](https://www.youtube.com/watch?v=FLfmMreDee8)
+## Notes and Tasks
+### Notes:
+- Discuss budget approval in the next meeting.
+- Follow up on the contract signature.
+### Tasks:
+1. Prepare the final proposal - **Due:** 2024-06-25
+2. Schedule product demo - **Due:** 2024-06-28`,
+        },
+      ];
+
+      // Function to populate the list container with items
+      const listContainer = document.getElementById("list-container");
+      listItems.forEach((item) => {
+        const div = document.createElement("div");
+        div.className = "list-item";
+        div.textContent = item.name;
+        div.setAttribute("data-content", item.content);
+        div.addEventListener("click", function () {
+          const content = this.getAttribute("data-content");
+          easyMDE.value(content);
+        });
+        listContainer.appendChild(div);
+      });
 
       // Function to get the content and store it in a variable
       document

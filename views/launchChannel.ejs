@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Deal Room</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/easymde/dist/easymde.min.css"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        height: 100vh;
+        background-color: #f5f5f5;
+      }
+      .main-header {
+        background-color: #4caf50;
+        color: white;
+        width: 100%;
+        text-align: center;
+        padding: 1em 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1;
+      }
+      .container {
+        flex: 1;
+        display: flex;
+        flex-direction: column; /* Ensure elements stack vertically */
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        margin-top: 6em; /* to ensure the button is below the header */
+      }
+      .subheader {
+        font-size: 1.5em;
+        color: #4caf50;
+        margin-bottom: 1em;
+        text-align: center;
+        font-weight: bold;
+      }
+      button {
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        padding: 1em 2em;
+        font-size: 1em;
+        cursor: pointer;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+      .popup {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        border-radius: 10px;
+        z-index: 10;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .popup-header {
+        width: 100%;
+        text-align: center;
+        padding: 0.5em 0;
+        background-color: #4caf50;
+        color: white;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+      }
+      .popup-content {
+        padding: 1.5em;
+      }
+      .popup select,
+      .popup textarea {
+        width: 100%;
+        padding: 0.75em;
+        margin: 0.75em 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+      }
+      .popup input {
+        width: 100%;
+        padding: 0.75em;
+        margin: 0.75em 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+      }
+      .popup select {
+        margin-bottom: 1em; /* Ensure there is space between the select and the textarea */
+      }
+      .popup .buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 1em;
+      }
+      .popup .buttons button {
+        flex: 1;
+        margin: 0 0.5em;
+      }
+      .popup .buttons button:first-child {
+        margin-left: 0;
+      }
+      .popup .buttons button:last-child {
+        margin-right: 0;
+      }
+      .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 5;
+      }
+      .editor-toolbar button {
+        color: black;
+        box-shadow: none;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="main-header">
+      <h1>Welcome to winrate!</h1>
+    </header>
+    <div class="container">
+      <h2 class="subheader">
+        Click here to configure and launch deal room into Slack
+      </h2>
+      <button id="launchButton">Launch Deal Room</button>
+    </div>
+    <div class="overlay" id="overlay"></div>
+    <div class="popup" id="popup">
+      <header class="popup-header">
+        <h3>Configure Deal Room</h3>
+      </header>
+      <div class="popup-content">
+        <select onchange="onTemplateSelect(this)" id="templates">
+          <option value="" disabled selected>Select a template</option>
+          <option
+            value="## Welcome!
+Welcome to the team, We're glad to have you here! 🎉"
+          >
+            Simple
+          </option>
+          <option
+            value="# Welcome
+Welcome to the team! We're excited to have you with us! 🎉
+
+### Getting Started
+Here are a few resources to help you get started:
+- [Team Handbook](https://docs.google.com/document/d/1ZXubgBkNFCrBxMWcdJX_Ah2cNDKHd9cAsCCRqaXAee8/edit#heading=h.80uwye99rlpl)
+- [Onboarding Checklist](https://docs.google.com/document/d/1ZXubgBkNFCrBxMWcdJX_Ah2cNDKHd9cAsCCRqaXAee8/edit#heading=h.80uwye99rlpl)"
+          >
+            Simple With Links
+          </option>
+          <option
+            value="![](https://mir-s3-cdn-cf.behance.net/projects/404/a06875156734219.Y3JvcCwyNjY0LDIwODQsMjMwLDA.png)
+## Welcome!
+Welcome to the team, We're glad to have you here!"
+          >
+            Simple With Image
+          </option>
+          <option
+            value="![](https://mir-s3-cdn-cf.behance.net/projects/404/a06875156734219.Y3JvcCwyNjY0LDIwODQsMjMwLDA.png)
+# Welcome
+Welcome to the team! We're excited to have you with us! 🎉
+
+### Getting Started
+Here are a few resources to help you get started:
+- [Team Handbook](https://docs.google.com/document/d/1ZXubgBkNFCrBxMWcdJX_Ah2cNDKHd9cAsCCRqaXAee8/edit#heading=h.80uwye99rlpl)
+- [Onboarding Checklist](https://docs.google.com/document/d/1ZXubgBkNFCrBxMWcdJX_Ah2cNDKHd9cAsCCRqaXAee8/edit#heading=h.80uwye99rlpl)"
+          >
+            Complex With Links & Image
+          </option>
+        </select>
+        <div id="editor-container">
+          <textarea
+            id="markdown-editor"
+            placeholder="Enter details here..."
+          ></textarea>
+        </div>
+        <input
+          type="text"
+          placeholder="Enter unique deal room name"
+          name="dealroom-name"
+          class="dealroom-name"
+          id="dealroom-name"
+        />
+        <div class="buttons">
+          <button id="confirmButton">Confirm</button>
+          <button id="cancelButton">Cancel</button>
+        </div>
+      </div>
+    </div>
+    <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
+    <script>
+      // Initialize EasyMDE
+      var easyMDE = new EasyMDE({
+        element: document.getElementById("markdown-editor"),
+        maxHeight: "300px",
+        sideBySideFullscreen: false,
+      });
+      easyMDE.togglePreview();
+
+      const myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+
+      const payload = {
+        emails: ["tejassoni@york.ie"],
+        name: "",
+        isPrivate: false,
+        markdownContent: "",
+      };
+
+      document
+        .getElementById("launchButton")
+        .addEventListener("click", function () {
+          document.getElementById("popup").style.display = "block";
+          document.getElementById("overlay").style.display = "block";
+        });
+
+      document
+        .getElementById("cancelButton")
+        .addEventListener("click", function () {
+          document.getElementById("popup").style.display = "none";
+          document.getElementById("overlay").style.display = "none";
+        });
+
+      document
+        .getElementById("confirmButton")
+        .addEventListener("click", function () {
+          // Handle confirm action here
+          payload.name = document.getElementById("dealroom-name").value;
+          payload.markdown = easyMDE.value();
+          const raw = JSON.stringify(payload);
+          const requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: raw,
+            redirect: "follow",
+          };
+          fetch("http://localhost:3000/api/channel", requestOptions)
+            .then(async (response) => await response.json())
+            .then((result) => {
+              console.log(".then  result:", result);
+              const channel = result.conversation.channel;
+              console.log(".then  channel:", channel);
+              const blocks = [
+                {
+                  type: "section",
+                  text: {
+                    type: "mrkdwn",
+                    text: `Welcome to the *${channel.name}*.`,
+                  },
+                },
+                {
+                  type: "actions",
+                  elements: [
+                    {
+                      type: "button",
+                      text: {
+                        type: "plain_text",
+                        text: "Open Canvas",
+                      },
+                      url: `https://york-ie.slack.com/canvas/${channel.id}`,
+                    },
+                  ],
+                },
+              ];
+              const messagePayload = {
+                channel: channel.id,
+                blocks,
+                text: 'You have been invited to the channel!'
+              };
+              const rawBody = JSON.stringify(messagePayload);
+
+              fetch("/api/send-message", {
+                method: "POST",
+                body: rawBody,
+                headers: myHeaders,
+                redirect: "follow",
+              })
+                .then(async (res) => await res.json())
+                .then((result) => {
+                  console.log("pickerCallback  result:", result);
+                  alert(
+                    result.message ||
+                      "Successfully created channel with canvas!"
+                  );
+                  document.getElementById("popup").style.display = "none";
+                  document.getElementById("overlay").style.display = "none";
+                })
+                .catch((error) => {
+                  console.log("pickerCallback  error:", error);
+                });
+            })
+            .catch((error) => {
+              alert(error.message || "Something went wrong!");
+            });
+        });
+
+      // Handle dropdown changes
+      const onTemplateSelect = (event) => easyMDE.value(event.value);
+    </script>
+  </body>
+</html>

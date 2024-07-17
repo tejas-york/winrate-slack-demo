@@ -2,7 +2,7 @@ const slackApp = require(".").slackApp;
 const { webClient } = require(".");
 
 /**
- * @description Create channel and invite external channel with 
+ * @description Create channel and invite external channel with
  * @param emails array
  * @param name string
  * @param isPrivate boolean
@@ -53,8 +53,6 @@ const externalInvite = async (req, res) => {
       const canvas = await webClient.conversations.canvases.create({
         channel_id: conversation.channel.id,
         document_content: {
-          // markdown: '# Shared Links\n # Notes\n',
-          // markdown: '## **Bold Heading**\n* point 1\n* ***point 2***\n* *point 3*\n* **point 4**\n* [point 5](https://google.com)\n\n> Tab\n\n![image](https://hslda.org/images/librariesprovider2/images/lp/testing-and-evaluation-istock-495639272-compressor.jpg?sfvrsn=d82ef5d1_2)',
           markdown,
           type: "markdown",
         },
@@ -66,6 +64,7 @@ const externalInvite = async (req, res) => {
       conversation,
     });
   } catch (error) {
+    console.log("externalInvite  error:", error)
     res.status(400).json({
       message: "Something went wrong!, " + error.message,
     });

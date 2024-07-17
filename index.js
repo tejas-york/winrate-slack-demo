@@ -33,6 +33,7 @@ app.get("/latest-messages", (_, res) => res.render("sharedLinks"));
 app.get("/markdown-editor", (_, res) => res.render("markdownEditor"));
 app.get("/channel-list", (_, res) => res.render("channelList"));
 app.get("/users-list", (_, res) => res.render("usersList"));
+app.get("/launch-channel", (_, res) => res.render("launchChannel"));
 
 /* Controller Routes */
 app.get("/api/test", test);
