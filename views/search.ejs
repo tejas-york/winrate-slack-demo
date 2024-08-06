@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Search Messages</title>
+    <!-- <link rel="stylesheet" href="styles.css" /> -->
+    <style>
+      /* Basic reset */
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+      }
+
+      #search-container {
+        display: flex;
+        align-items: center;
+        margin: 20px;
+      }
+
+      #search-input {
+        flex: 1;
+        padding: 10px;
+        border: 2px solid #007bff;
+        border-radius: 4px;
+        font-size: 16px;
+        transition: border-color 0.3s ease;
+      }
+
+      #search-input:focus {
+        border-color: #0056b3;
+        outline: none;
+      }
+
+      #search-button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        background-color: #007bff;
+        color: #fff;
+        font-size: 16px;
+        cursor: pointer;
+        margin-left: 10px;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      #search-button:hover {
+        background-color: #0056b3;
+      }
+
+      #search-button:focus {
+        outline: none;
+      }
+
+      #blocks-container {
+        margin: 20px;
+      }
+
+      .block {
+        border: 1px solid #ddd;
+        padding: 15px;
+        margin-bottom: 15px;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .channel,
+      .sender {
+        font-size: 14px;
+        color: #555;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      .channel {
+        color: #007bff; /* Highlight channel name */
+      }
+
+      .sender {
+        color: #333; /* Distinct color for sender */
+      }
+
+      .message {
+        margin-bottom: 10px;
+      }
+
+      .attachment {
+        border-top: 1px solid #eee;
+        padding-top: 10px;
+        margin-top: 10px;
+      }
+
+      .attachment a {
+        text-decoration: none;
+        color: #007bff;
+        transition: color 0.3s ease;
+      }
+
+      .attachment a:hover {
+        color: #0056b3;
+      }
+
+      .file {
+        display: flex;
+        align-items: center;
+      }
+
+      .file img,
+      .file video {
+        max-width: 100px;
+        margin-right: 10px;
+      }
+
+      .file-details {
+        max-width: calc(100% - 120px);
+        overflow: hidden;
+      }
+
+      .file-title {
+        font-weight: bold;
+      }
+
+      .file-size {
+        font-size: 12px;
+        color: #777;
+      }
+
+      /* Dropdown Styles */
+      #channel-dropdown-container {
+        margin: 20px;
+        display: flex;
+        align-items: center;
+      }
+
+      #channel-dropdown-label {
+        margin-right: 10px;
+        font-weight: bold;
+      }
+
+      #channel-dropdown {
+        padding: 10px;
+        border: 2px solid #007bff;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: border-color 0.3s ease;
+      }
+
+      #channel-dropdown:focus {
+        border-color: #0056b3;
+        outline: none;
+      }
+
+      /* Dropdown Styles */
+      #user-dropdown-container {
+        margin: 20px;
+        display: flex;
+        align-items: center;
+      }
+
+      #user-dropdown-label {
+        margin-right: 10px;
+        font-weight: bold;
+      }
+
+      #user-dropdown {
+        padding: 10px;
+        border: 2px solid #007bff;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: border-color 0.3s ease;
+      }
+
+      #user-dropdown:focus {
+        border-color: #0056b3;
+        outline: none;
+      }
+
+      #date-range-container {
+        margin: 20px;
+        display: flex;
+        align-items: center;
+      }
+      #date-range-label {
+        margin-right: 10px;
+        font-weight: bold;
+      }
+      #date-range {
+        padding: 10px;
+        border: 2px solid #007bff;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: border-color 0.3s ease;
+        min-width: 174px;
+      }
+      #date-range:focus {
+        border-color: #0056b3;
+        outline: none;
+      }
+      .timestamp {
+        font-size: smaller;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Channel Dropdown -->
+    <div id="channel-dropdown-container">
+      <label for="channel-dropdown" id="channel-dropdown-label"
+        >In Channel:</label
+      >
+      <select id="channel-dropdown">
+        <option value="">All Channels</option>
+      </select>
+    </div>
+
+    <!-- Channel Dropdown -->
+    <div id="user-dropdown-container">
+      <label for="user-dropdown" id="user-dropdown-label">From User:</label>
+      <select id="user-dropdown">
+        <option value="">All Users</option>
+      </select>
+    </div>
+
+    <!-- Date Range Picker -->
+    <div id="date-range-container">
+      <label for="date-range" id="date-range-label">Select Date Range:</label>
+      <input type="text" name="date-range" id="date-range" />
+    </div>
+
+    <!-- Search Input and Button -->
+    <div id="search-container">
+      <input type="text" id="search-input" placeholder="Search messages..." />
+      <button id="search-button">Search</button>
+    </div>
+
+    <!-- Blocks Container -->
+    <div id="blocks-container">No Result Found!</div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const blocksContainer = document.getElementById("blocks-container");
+        const searchInput = document.getElementById("search-input");
+        const searchButton = document.getElementById("search-button");
+        const channelDropdown = document.getElementById("channel-dropdown");
+        const dateRange = document.getElementById("date-range");
+        const userDropdown = document.getElementById("user-dropdown");
+        $('input[name="date-range"]').daterangepicker({
+          // startDate: moment().startOf("hour"),
+          // endDate: moment().startOf("hour").add(32, "hour"),
+          autoUpdateInput: false,
+          locale: {
+            format: "YYYY-MM-DD",
+            cancelLabel: "Clear",
+          },
+        });
+        $('input[name="date-range"]').on(
+          "apply.daterangepicker",
+          function (ev, picker) {
+            $(this).val(
+              picker.startDate.format("YYYY-MM-DD") +
+                " - " +
+                picker.endDate.format("YYYY-MM-DD")
+            );
+          }
+        );
+        $("#date-range").on("cancel.daterangepicker", function (ev, picker) {
+          //do something, like clearing an input
+          $("#date-range").val("");
+        });
+
+        // Fetch and populate the channel dropdown
+        fetchChannels();
+        fetchUsers();
+
+        searchButton.addEventListener("click", async (event) => {
+          const query = searchInput.value;
+          let selectedChannel = channelDropdown.value;
+          if (selectedChannel) {
+            selectedChannel = `in:${selectedChannel} `;
+          }
+          const date = dateRange.value.split(" - ");
+          let dateRangeCondition = "";
+          if (date.length > 1) {
+            if (date[0] === date[1]) {
+              dateRangeCondition = `on:${date[0]}`;
+            } else {
+              dateRangeCondition = `before:${date[1]} after:${date[0]} `;
+            }
+          }
+          const user = userDropdown.value;
+          let userCondition = "";
+          if (user) {
+            userCondition = `from:@${user} `;
+          }
+          console.log(
+            "searchButton.addEventListener  userCondition:",
+            userCondition
+          );
+          try {
+            const response = await searchMessages(
+              query,
+              selectedChannel,
+              dateRangeCondition,
+              userCondition
+            );
+            const matches = response.data && response.data.matches;
+            renderBlocks(matches);
+          } catch (error) {
+            console.log("searchButton.addEventListener error:", error);
+            alert("Something went wrong!", error.message);
+          }
+        });
+        // Fetch channels from the API and populate the dropdown
+        async function fetchUsers() {
+          try {
+            const response = await fetch("/api/list-all-users", {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+            const result = await response.json();
+
+            if (result.data.members) {
+              result.data.members.forEach((user) => {
+                const optionElement = document.createElement("option");
+                optionElement.value = user.name;
+                optionElement.textContent = user.name;
+                userDropdown.appendChild(optionElement);
+              });
+            }
+          } catch (error) {
+            console.error("Error fetching channels:", error);
+          }
+        }
+
+        // Fetch channels from the API and populate the dropdown
+        async function fetchChannels() {
+          try {
+            const response = await fetch("/api/list-all-channels", {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+            const result = await response.json();
+
+            if (result.channelInfo.channels) {
+              populateChannelDropdown(result.channelInfo.channels);
+            }
+          } catch (error) {
+            console.error("Error fetching channels:", error);
+          }
+        }
+
+        // Populate the dropdown with channels
+        function populateChannelDropdown(channels) {
+          channels.forEach((channel) => {
+            const optionElement = document.createElement("option");
+            optionElement.value = channel.name;
+            optionElement.textContent = channel.name;
+            channelDropdown.appendChild(optionElement);
+          });
+        }
+
+        // Search messages function
+        function searchMessages(
+          searchText,
+          channelName,
+          dateRangeCondition,
+          userCondition
+        ) {
+          blocksContainer.innerHTML = "Loading...";
+          return new Promise(async (resolve, reject) => {
+            const myHeaders = new Headers();
+
+            const requestOptions = {
+              method: "GET",
+              headers: myHeaders,
+              redirect: "follow",
+            };
+
+            let conditions = "";
+            if (channelName) conditions += channelName;
+            if (dateRangeCondition) conditions += dateRangeCondition;
+            if (userCondition) conditions += userCondition;
+            try {
+              console.log("returnnewPromise  conditions:", conditions);
+              // Append channel name if selected
+              searchText = conditions
+                ? `${conditions} ${searchText}`
+                : searchText;
+              const response = await fetch(
+                `api/search?query=${searchText}`,
+                requestOptions
+              );
+              const result = await response.json();
+              resolve(result);
+            } catch (error) {
+              console.log("returnnewPromise error:", error);
+              reject(error);
+            }
+          });
+        }
+
+        // Render blocks based on the provided data
+        function renderBlocks(blocksToRender) {
+          blocksContainer.innerHTML = blocksToRender.length
+            ? ""
+            : "No Result Found!";
+
+          blocksToRender.forEach((block) => {
+            const blockElement = document.createElement("div");
+            blockElement.className = "block";
+
+            const channelElement = createChannelInfo(block.channel);
+            blockElement.appendChild(channelElement);
+
+            const senderElement = createSender(block.username);
+            blockElement.appendChild(senderElement);
+
+            const messageElement = createMessage(block);
+            blockElement.appendChild(messageElement);
+
+            blocksContainer.appendChild(blockElement);
+          });
+        }
+
+        // Create channel information element
+        function createChannelInfo(channel) {
+          const channelElement = document.createElement("div");
+          channelElement.className = "channel";
+          channelElement.textContent = `#${channel.name}`;
+          return channelElement;
+        }
+
+        // Create sender element
+        function createSender(username) {
+          const senderElement = document.createElement("div");
+          senderElement.className = "sender";
+          senderElement.textContent = username;
+          return senderElement;
+        }
+        // Create message element
+        function createMessage(block) {
+          const messageElement = document.createElement("div");
+          messageElement.className = "message";
+
+          if (block.blocks) {
+            block.blocks.forEach((block) => {
+              if (block.type === "rich_text") {
+                block.elements.forEach((element) => {
+                  if (element.type === "rich_text_section") {
+                    element.elements.forEach((el) => {
+                      if (el.type === "text") {
+                        const textElement = document.createElement("p");
+                        if (el.style && el.style.bold) {
+                          textElement.style.fontWeight = "bold";
+                        }
+                        textElement.textContent = el.text;
+                        messageElement.appendChild(textElement);
+                      } else if (el.type === "broadcast") {
+                        const broadcastElement = document.createElement("span");
+                        broadcastElement.style.fontWeight = "bold";
+                        broadcastElement.textContent = "@channel ";
+                        messageElement.appendChild(broadcastElement);
+                      }
+                    });
+                  }
+                });
+              }
+            });
+          }
+
+          if (block.attachments) {
+            block.attachments.forEach((attachment) => {
+              const attachmentElement = document.createElement("div");
+              attachmentElement.className = "attachment";
+              const pretextElement = document.createElement("p");
+              pretextElement.textContent = attachment.pretext;
+              attachmentElement.appendChild(pretextElement);
+
+              if (attachment.fields) {
+                attachment.fields.forEach((field) => {
+                  const fieldElement = document.createElement("p");
+                  const titleElement = document.createElement("strong");
+                  titleElement.textContent = `${field.title}: `;
+                  fieldElement.appendChild(titleElement);
+                  fieldElement.appendChild(
+                    document.createTextNode(field.value)
+                  );
+                  attachmentElement.appendChild(fieldElement);
+                });
+              }
+
+              messageElement.appendChild(attachmentElement);
+            });
+          }
+
+          if (block.files) {
+            block.files.forEach((file) => {
+              const fileElement = document.createElement("div");
+              fileElement.className = "file";
+              const fileLink = document.createElement("a");
+              fileLink.href = file.url_private;
+              fileLink.textContent = file.title;
+              fileElement.appendChild(fileLink);
+              messageElement.appendChild(fileElement);
+            });
+          }
+
+          const fieldElement = document.createElement("p");
+          fieldElement.className = "timestamp";
+          let timestamp = block.ts.split(".");
+          timestamp[0] = timestamp[0] + "000";
+          timestamp = timestamp.join(".");
+          console.log("createMessage  timestamp:", timestamp);
+          fieldElement.textContent = new Date(
+            Number(timestamp)
+          ).toLocaleString();
+          messageElement.appendChild(fieldElement);
+          return messageElement;
+        }
+      });
+    </script>
+
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"
+    ></script>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"
+    />
+  </body>
+</html>

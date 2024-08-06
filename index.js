@@ -16,6 +16,7 @@ const renameChannel = require("./controllers/renameChannel");
 const listAllChannels = require("./controllers/listAllChannels");
 const archiveChannel = require("./controllers/archiveChannel");
 const listAllUsers = require("./controllers/listAllUsers");
+const searchMessages = require("./controllers/searchMessages");
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -34,6 +35,8 @@ app.get("/markdown-editor", (_, res) => res.render("markdownEditor"));
 app.get("/channel-list", (_, res) => res.render("channelList"));
 app.get("/users-list", (_, res) => res.render("usersList"));
 app.get("/launch-channel", (_, res) => res.render("launchChannel"));
+app.get("/search", (_, res) => res.render("search"));
+app.get("/customize-channel", (_, res) => res.render("customizeChannel"));
 
 /* Controller Routes */
 app.get("/api/test", test);
@@ -47,6 +50,7 @@ app.put("/api/rename-channel/:channel", renameChannel);
 app.get("/api/list-all-channels", listAllChannels);
 app.delete("/api/archive-channel/:channel", archiveChannel);
 app.get("/api/list-all-users", listAllUsers);
+app.get("/api/search", searchMessages);
 
 var port = normalizePort(process.env.PORT || "3000");
 app.set("port", port);

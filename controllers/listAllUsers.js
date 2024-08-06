@@ -9,7 +9,15 @@ const listAllUsers = async (req, res) => {
       ...rest,
     });
     data.members = data.members.filter((v) => !v.is_bot);
-
+    data.members.sort((a, b) => {
+      if (a.name < b.name) {
+        return -1;
+      }
+      if (b < a) {
+        return 1;
+      }
+      return 0;
+    });
     return res.status(200).json({
       message: "List feched successfully.",
       data,

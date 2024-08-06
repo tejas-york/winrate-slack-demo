@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Channel Information Form</title>
+    <!-- Import Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Basic reset and body styling */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Open Sans", sans-serif;
+        background-color: #f4f4f9;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        padding: 20px;
+      }
+
+      .form-container {
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        max-width: 500px;
+        width: 100%;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .form-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .form-title {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 24px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        font-weight: 600;
+        color: #555;
+        margin-bottom: 8px;
+      }
+
+      input[type="text"],
+      textarea,
+      select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+        background-color: #f9f9f9;
+        transition: border-color 0.3s ease, background-color 0.3s ease;
+      }
+
+      input[type="text"]:focus,
+      textarea:focus,
+      select:focus {
+        border-color: #a1a1a1;
+        background-color: #fff;
+        outline: none;
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 120px;
+      }
+
+      .submit-btn {
+        display: block;
+        width: 100%;
+        padding: 14px;
+        background-color: #3498db;
+        color: #fff;
+        font-size: 18px;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .submit-btn:hover {
+        background-color: #2980b9;
+        transform: translateY(-2px);
+      }
+
+      .submit-btn:active {
+        transform: translateY(0);
+      }
+
+      .submit-btn::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 300%;
+        height: 300%;
+        background-color: rgba(255, 255, 255, 0.15);
+        border-radius: 50%;
+        transform: translate(-50%, -50%) scale(0);
+        transition: transform 0.5s ease;
+        pointer-events: none;
+      }
+
+      .submit-btn:active::before {
+        transform: translate(-50%, -50%) scale(1);
+        transition: transform 0s;
+      }
+
+      .loading-message {
+        font-size: 14px;
+        color: #777;
+        text-align: center;
+      }
+
+      .error-message {
+        color: #e74c3c;
+        text-align: center;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="form-container">
+      <h2 class="form-title">Customize Channel</h2>
+      <!-- Select Channel Dropdown -->
+      <div class="form-group">
+        <label for="channelSelect">Select Channel</label>
+        <select id="channelSelect" name="channelSelect" required>
+          <option value="">Loading channels...</option>
+        </select>
+        <p id="loadingMessage" class="loading-message">
+          Fetching channels from API...
+        </p>
+        <p id="errorMessage" class="error-message" style="display: none">
+          Error loading channels. Please try again.
+        </p>
+      </div>
+      <form id="channelForm" action="#" method="post">
+        <div class="form-group">
+          <label for="channelName">Channel Name</label>
+          <input
+            type="text"
+            id="channelName"
+            name="channelName"
+            placeholder="Enter channel name"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="channelTopic">Channel Topic</label>
+          <input
+            type="text"
+            id="channelTopic"
+            name="channelTopic"
+            placeholder="Enter channel topic"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea
+            id="description"
+            name="description"
+            placeholder="Enter channel description"
+            required
+          ></textarea>
+        </div>
+        <button type="submit" class="submit-btn">Submit</button>
+      </form>
+    </div>
+
+    <script>
+      // URL of the API to fetch channel data
+      const apiUrl = "/api/list-all-channels"; // Replace with your actual API endpoint
+      const putApiUrl = "/api/rename-channel"; // Replace with your actual POST API endpoint
+
+      // Elements
+      const channelSelect = document.getElementById("channelSelect");
+      const loadingMessage = document.getElementById("loadingMessage");
+      const errorMessage = document.getElementById("errorMessage");
+      const channelNameInput = document.getElementById("channelName");
+      const channelForm = document.getElementById("channelForm");
+
+      // Fetch channels from the API
+      async function fetchChannels() {
+        try {
+          const response = await fetch(apiUrl);
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          const data = await response.json();
+          populateChannelOptions(data.channelInfo.channels);
+          loadingMessage.style.display = "none";
+        } catch (error) {
+          console.error("Error fetching channels:", error);
+          loadingMessage.style.display = "none";
+          errorMessage.style.display = "block";
+        }
+      }
+
+      // Populate the dropdown with channel data
+      function populateChannelOptions(channels) {
+        // Clear existing options
+        channelSelect.innerHTML = "";
+
+        // Add default option
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.textContent = "Select a channel";
+        channelSelect.appendChild(defaultOption);
+
+        // Add channels to the dropdown
+        channels.forEach((channel) => {
+          const option = document.createElement("option");
+          option.value = channel.id;
+          option.textContent = channel.name;
+          option.dataset.channelName = channel.name; // Store the channel name in a data attribute
+          option.dataset.channelTopic = channel.topic; // Store channel topic if available
+          option.dataset.description = channel.description; // Store description if available
+          channelSelect.appendChild(option);
+        });
+
+        // Add event listener for dropdown change
+        channelSelect.addEventListener("change", function () {
+          const selectedOption =
+            channelSelect.options[channelSelect.selectedIndex];
+          if (selectedOption.value) {
+            channelNameInput.value = selectedOption.dataset.channelName; // Set channel name based on selected option
+          } else {
+            channelNameInput.value = ""; // Clear the input if no channel is selected
+          }
+        });
+      }
+
+      // Handle form submission
+      channelForm.addEventListener("submit", async function (e) {
+        e.preventDefault(); // Prevent default form submission
+
+        // Collect form data
+        const formData = {
+          channelId: channelSelect.value,
+          name: channelNameInput.value,
+          topic: document.getElementById("channelTopic").value,
+          purpose: document.getElementById("description").value,
+        };
+
+        // Log the collected form data (for debugging purposes)
+        console.log("Form Data:", formData);
+
+        // Send form data to the POST API
+        try {
+          const response = await fetch(putApiUrl + '/' + channelSelect.value, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+          });
+
+          if (!response.ok) {
+            throw new Error("Failed to submit form data");
+          }
+
+          // Handle success response
+          const result = await response.json();
+          console.log("Success:", result);
+          alert("Channel details submitted successfully!");
+
+          // Clear form fields after successful submission
+          channelForm.reset();
+          channelSelect.selectedIndex = 0; // Reset dropdown
+        } catch (error) {
+          console.error("Error submitting form data:", error);
+          alert(
+            "An error occurred while submitting the form. Please try again."
+          );
+        }
+      });
+
+      // Initialize the fetching of channels when the page loads
+      window.addEventListener("DOMContentLoaded", fetchChannels);
+    </script>
+  </body>
+</html>
