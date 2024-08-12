@@ -1,3 +1,5 @@
+const { webClient } = require(".");
+
 const slackApp = require(".").slackApp;
 
 /**
@@ -6,16 +8,32 @@ const slackApp = require(".").slackApp;
  * @param user string
  */
 const uploadCommand = async (req, res) => {
-  const { text, user_name } = req.body;
-
   // You can perform any action here
-  const responseText = `Hello ${user_name}, you used the command with text: "${text}"`;
-
-  // Respond back to Slack
-  res.send({
-    response_type: "in_channel", // or 'ephemeral' for private messages
-    text: responseText,
+  console.log("uploadCommand  req.body:", req.body);
+  const { trigger_id } = req.body;
+  // Open a dialog to ask for file upload (if necessary)
+  await webClient.chat.postEphemeral({
+    trigger_id: trigger_id,
+    view: {
+      type: "modal",
+      callback_id: "file_upload_modal",
+      title: {
+        type: "plain_text",
+        text: "Upload File",
+      },
+      blocks: [
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: "Please upload your file.",
+          },
+        },
+      ],
+    },
   });
+
+  res.send();
 };
 
 module.exports = uploadCommand;
