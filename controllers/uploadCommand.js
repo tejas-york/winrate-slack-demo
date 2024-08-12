@@ -8,32 +8,41 @@ const slackApp = require(".").slackApp;
  * @param user string
  */
 const uploadCommand = async (req, res) => {
-  // You can perform any action here
-  console.log("uploadCommand  req.body:", req.body);
-  const { trigger_id } = req.body;
-  // Open a dialog to ask for file upload (if necessary)
-  await webClient.chat.postEphemeral({
-    trigger_id: trigger_id,
-    view: {
-      type: "modal",
-      callback_id: "file_upload_modal",
-      title: {
-        type: "plain_text",
-        text: "Upload File",
-      },
-      blocks: [
-        {
-          type: "section",
-          text: {
-            type: "mrkdwn",
-            text: "Please upload your file.",
-          },
+  try {
+    // You can perform any action here
+    console.log("uploadCommand  req.body:", req.body);
+    const { trigger_id, user_id, channel_id } = req.body;
+    // Open a dialog to ask for file upload (if necessary)
+    await webClient.chat.postEphemeral({
+      trigger_id: trigger_id,
+      user: user_id,
+      channel: channel_id,
+      view: {
+        type: "modal",
+        callback_id: "file_upload_modal",
+        title: {
+          type: "plain_text",
+          text: "Upload File",
         },
-      ],
-    },
-  });
+        blocks: [
+          {
+            type: "section",
+            text: {
+              type: "mrkdwn",
+              text: "Please upload your file.",
+            },
+          },
+        ],
+      },
+    });
 
-  res.send();
+    res.send();
+  } catch (error) {
+    res.send({
+      response_type: "in_channel", // or 'ephemeral' for private messages
+      text: error.message || "Something went wrong!",
+    });
+  }
 };
 
 module.exports = uploadCommand;
