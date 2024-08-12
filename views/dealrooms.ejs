@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Winrate</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        h1 {
+            text-align: center;
+            margin: 20px;
+            color: #333;
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+            margin: 0 auto;
+            max-width: 1200px;
+            padding: 0 20px;
+        }
+        .dealrooms, .notifications {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 48%;
+            min-height: 25em;
+        }
+        .dealrooms {
+            margin-right: 20px;
+        }
+        .header {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #333;
+        }
+        .dealroom, .notification {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            background-color: #fafafa;
+            transition: background-color 0.3s ease;
+        }
+        .dealroom:hover, .notification:hover {
+            background-color: #f0f0f0;
+        }
+        .dealroom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-left: 15px;
+        }
+        .won, .lost {
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+        .won {
+            background-color: #28a745;
+        }
+        .won:hover {
+            background-color: #218838;
+        }
+        .lost {
+            background-color: #dc3545;
+        }
+        .lost:hover {
+            background-color: #c82333;
+        }
+        .notification-title {
+            font-weight: bold;
+            color: #333;
+        }
+        .notification-time {
+            font-size: 0.9em;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Winrate</h1>
+
+    <div class="container">
+        <!-- Deal Rooms Section -->
+        <div class="dealrooms">
+            <div class="header">Deal Rooms</div>
+            <div class="dealroom">
+                <div>
+                    <strong>Dominos</strong><br>
+                    <small>Owner: John Doe</small>
+                </div>
+                <div class="buttons">
+                    <button class="won">Won</button>
+                    <button class="lost">Lost</button>
+                </div>
+            </div>
+            <div class="dealroom">
+                <div>
+                    <strong>Dell Inc.</strong><br>
+                    <small>Owner: Jane Smith</small>
+                </div>
+                <div class="buttons">
+                    <button class="won">Won</button>
+                    <button class="lost">Lost</button>
+                </div>
+            </div>
+            <!-- Add more dealrooms as needed -->
+        </div>
+
+        <!-- Notifications Section -->
+        <div class="notifications">
+            <div class="header">Notifications</div>
+            <div class="notification">
+                <div class="notification-title">New deal created</div>
+                <div class="notification-time">10:30 AM</div>
+            </div>
+            <div class="notification">
+                <div class="notification-title">Dealroom 2 won</div>
+                <div class="notification-time">09:15 AM</div>
+            </div>
+            <!-- Add more notifications as needed -->
+        </div>
+    </div>
+
+</body>
+</html>
