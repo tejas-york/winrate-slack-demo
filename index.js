@@ -17,6 +17,8 @@ const listAllChannels = require("./controllers/listAllChannels");
 const archiveChannel = require("./controllers/archiveChannel");
 const listAllUsers = require("./controllers/listAllUsers");
 const searchMessages = require("./controllers/searchMessages");
+const joinChannel = require("./controllers/joinChannel");
+const uploadCommand = require("./controllers/uploadCommand");
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -37,6 +39,7 @@ app.get("/users-list", (_, res) => res.render("usersList"));
 app.get("/launch-channel", (_, res) => res.render("launchChannel"));
 app.get("/search", (_, res) => res.render("search"));
 app.get("/customize-channel", (_, res) => res.render("customizeChannel"));
+app.get("/join-channel", (_, res) => res.render("joinChannel"));
 
 /* Controller Routes */
 app.get("/api/test", test);
@@ -51,6 +54,8 @@ app.get("/api/list-all-channels", listAllChannels);
 app.delete("/api/archive-channel/:channel", archiveChannel);
 app.get("/api/list-all-users", listAllUsers);
 app.get("/api/search", searchMessages);
+app.put("/api/join-channel/:channel", joinChannel);
+app.post("/api/upload-command", uploadCommand);
 
 var port = normalizePort(process.env.PORT || "3000");
 app.set("port", port);

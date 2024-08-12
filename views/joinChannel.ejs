@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Team View</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <style>
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+      }
+      .container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+      .header {
+        background-color: #4caf50;
+        color: white;
+        width: 100%;
+        text-align: center;
+        padding: 10px 0;
+      }
+      .profile-section {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        background-color: #f9f9f9;
+        border-bottom: 1px solid #ddd;
+      }
+      .profile-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin-right: 15px;
+      }
+      .profile-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .profile-info {
+        flex: 1;
+      }
+      .profile-name {
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 5px;
+      }
+      .profile-email {
+        font-size: 1em;
+        color: #666;
+      }
+      .search-bar {
+        padding: 15px;
+        background-color: #f9f9f9;
+        border-bottom: 1px solid #ddd;
+      }
+      .search-bar input[type="text"] {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 1em;
+      }
+      .item-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        flex: 1;
+        overflow-y: auto;
+      }
+      .item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15px;
+        border-bottom: 1px solid #ddd;
+      }
+      .item:last-child {
+        border-bottom: none;
+      }
+      .item .icon {
+        margin-right: 10px;
+        font-size: 1.2em;
+        color: #333;
+      }
+      .item .name {
+        flex: 1;
+        font-size: 1.1em;
+      }
+      .item .join-button {
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      .item .join-button:hover {
+        background-color: #3d8c40;
+      }
+      .next-page-button {
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        margin: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      .next-page-button:hover {
+        background-color: #45a049;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h2>Channels</h2>
+      </div>
+
+      <div class="profile-section">
+        <div class="profile-icon">
+          <img
+            src="https://avatars.slack-edge.com/2024-04-29/7030526229894_036e23fb076627b9eceb_original.jpg"
+            alt="User Icon"
+          />
+        </div>
+        <div class="profile-info">
+          <div class="profile-name">Logged in as Manish Bachani</div>
+          <div class="profile-email">manishbachani@york.ie</div>
+        </div>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="search-bar">
+        <input type="text" id="search-input" placeholder="Search channels..." />
+      </div>
+
+      <ul class="item-list" id="item-list">
+        <!-- Items will be populated here dynamically -->
+      </ul>
+      <button
+        id="next-page-button"
+        class="next-page-button"
+        style="display: none"
+        onclick="fetchNextPage()"
+      >
+        Next Page
+      </button>
+    </div>
+
+    <script>
+      let nextCursor = null;
+      let channels = []; // Store channels for searching
+
+      document.addEventListener("DOMContentLoaded", () => {
+        fetchItems();
+
+        // Attach event listener to search input
+        document
+          .getElementById("search-input")
+          .addEventListener("input", function () {
+            const searchQuery = this.value.toLowerCase();
+            filterChannels(searchQuery);
+          });
+      });
+
+      function fetchItems(cursor = "") {
+        fetch(
+          `/api/list-all-channels?user=${"U079LK35DLG"}&types=private_channel,public_channel&exclude_archived=true&cursor=${cursor}`
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            const itemList = document.getElementById("item-list");
+            itemList.innerHTML = ""; // Clear existing items only on first fetch
+            channels = data.channelInfo.channels; // Save channels for search
+
+            renderChannels(channels);
+
+            nextCursor = data.channelInfo.response_metadata.next_cursor || null;
+            const nextPageButton = document.getElementById("next-page-button");
+            if (nextCursor) {
+              nextPageButton.style.display = "block";
+            } else {
+              nextPageButton.style.display = "none";
+            }
+          })
+          .catch((error) => console.error("Error fetching items:", error));
+      }
+
+      function renderChannels(channels) {
+        const itemList = document.getElementById("item-list");
+        itemList.innerHTML = ""; // Clear existing items
+
+        channels.forEach((item) => {
+          const listItem = document.createElement("li");
+          listItem.classList.add("item");
+
+          const icon = document.createElement("span");
+          icon.classList.add("icon");
+          icon.innerHTML = item.is_private
+            ? '<i class="fas fa-lock"></i>'
+            : '<i class="fas fa-hashtag"></i>';
+
+          const name = document.createElement("span");
+          name.classList.add("name");
+          name.textContent = item.name;
+
+          const joinButton = document.createElement("button");
+          joinButton.classList.add("join-button");
+          joinButton.textContent = "Join Channel";
+          joinButton.onclick = () => confirmJoin(item.id, item.name, name);
+
+          listItem.appendChild(icon);
+          listItem.appendChild(name);
+          listItem.appendChild(joinButton);
+
+          itemList.appendChild(listItem);
+        });
+      }
+
+      function filterChannels(query) {
+        const filteredChannels = channels.filter((channel) =>
+          channel.name.toLowerCase().includes(query)
+        );
+        renderChannels(filteredChannels);
+      }
+
+      function fetchNextPage() {
+        if (nextCursor) {
+          fetchItems(nextCursor);
+        }
+      }
+
+      function confirmJoin(itemId, name, nameElement) {
+        const confirmation = confirm(`Are you sure you want to join ${name}?`);
+        if (confirmation) {
+          joinItem(itemId, nameElement, name);
+        }
+      }
+
+      const myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+
+      function joinItem(itemId, nameElement, name) {
+        fetch(`api/join-channel/${itemId}`, {
+          method: "PUT",
+          body: JSON.stringify({
+            user: "U0712DF0ZUK",
+          }),
+          headers: myHeaders,
+        })
+          .then((response) => {
+            if (response.ok) {
+              alert("Joined channel successfully!");
+            } else {
+              alert("Failed to join item.");
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("Something went wrong!");
+          });
+      }
+    </script>
+  </body>
+</html>

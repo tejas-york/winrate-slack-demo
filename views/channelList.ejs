@@ -126,11 +126,9 @@
       });
 
       function fetchItems(cursor = "") {
-        fetch(`/api/list-all-channels?
-            user=${"U079LK35DLG"}&
-            types=private_channel,public_channel&
-            exclude_archived=true&
-            cursor=${cursor}`)
+        fetch(
+          `/api/list-all-channels?user=${"U079LK35DLG"}&types=private_channel,public_channel&exclude_archived=true&limit=10&cursor=${cursor}`
+        )
           .then((response) => response.json())
           .then((data) => {
             const itemList = document.getElementById("item-list");

@@ -56,6 +56,44 @@ limitations under the License.
       p {
         font-size: larger;
       }
+
+      .card {
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        display: flex;
+        margin: 20px 0;
+        overflow: hidden;
+        background-color: #fff;
+        max-width: 600px;
+      }
+
+      .card-thumbnail {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+      }
+
+      .card-content {
+        padding: 15px;
+        flex-grow: 1;
+      }
+
+      .card-title {
+        font-size: 18px;
+        font-weight: 500;
+        margin: 0 0 10px;
+      }
+
+      .card-info {
+        font-size: 14px;
+        color: #666;
+        margin: 0;
+      }
+      #selected-files {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
     </style>
   </head>
   <body>
@@ -212,13 +250,9 @@ limitations under the License.
         const view = new google.picker.View(google.picker.ViewId.DOCS);
         // view.setMimeTypes("image/png,image/jpeg,image/jpg");
         const picker = new google.picker.PickerBuilder()
-          .enableFeature(google.picker.Feature.NAV_HIDDEN)
-          .enableFeature(google.picker.Feature.MULTISELECT_ENABLED)
+          .addView(google.picker.ViewId.DOCS) // You can customize views here
+          .setOAuthToken(gapi.auth.getToken().access_token)
           .setDeveloperKey(API_KEY)
-          .setAppId(APP_ID)
-          .setOAuthToken(accessToken)
-          .addView(view)
-          .addView(new google.picker.DocsUploadView())
           .setCallback(pickerCallback)
           .build();
         picker.setVisible(true);
@@ -233,8 +267,10 @@ limitations under the License.
           "pickerCallback  google.picker.Action:",
           google.picker.Action
         );
-        console.log("pickerCallback  data:", data);
-        if (data.action === google.picker.Action.PICKED) {
+        if (
+          data[google.picker.Response.ACTION] === google.picker.Action.PICKED
+        ) {
+          console.log("pickerCallback  data:", data);
           /*  let text = `Picker response: \n${JSON.stringify(data, null, 2)}\n`;
           const document = data[google.picker.Response.DOCUMENTS][0];
           const fileId = document[google.picker.Document.ID];
@@ -252,11 +288,12 @@ limitations under the License.
           window.document.getElementById("content").innerText = text; */
           const pickedDocument = data[google.picker.Response.DOCUMENTS][0];
           const fileId = pickedDocument[google.picker.Document.ID];
-          const res = await gapi.client.drive.files.get({
-            fileId: fileId,
-            fields: "*",
-          });
-          console.log("pickerCallback  res:", res);
+          console.log("pickerCallback  fileId:", fileId);
+          // const res = await gapi.client.drive.files.get({
+          //   fileId: fileId,
+          //   fields: "*",
+          // });
+          // console.log("pickerCallback  res:", res);
           const elements = [
             {
               type: "text",
@@ -282,31 +319,72 @@ limitations under the License.
               },
             },
           ];
-
           const urls = [];
-          data.docs.forEach((element) => {
-            const doc = document.createElement("iframe");
-            doc.src = element.embedUrl;
-            doc.height = "250";
-            doc.width = "250";
-            document.getElementById("selected-files").appendChild(doc);
-            document
-              .getElementById("selected-files")
-              .appendChild(document.createElement("br"));
-            document
-              .getElementById("selected-files")
-              .appendChild(document.createElement("br"));
+          const element = data.docs[0];
+          const endpoint = `https://www.googleapis.com/drive/v3/files/${fileId}?fields=thumbnailLink,name,owners,modifiedTime&key=${API_KEY}`;
+          const response = await fetch(endpoint);
+          const responseData = await response.json();
+          console.log("pickerCallback  responseData:", responseData);
+          const metadata = {
+            title: responseData.name,
+            thumbnail: responseData.thumbnailLink,
+            owner: responseData.owners
+              ? responseData.owners[0].displayName
+              : "Unknown Owner",
+            modified: new Date(responseData.modifiedTime).toLocaleString(),
+          };
+          console.log("pickerCallback  metadata:", metadata);
+          // data.docs.forEach((element) => {
+          // Create card elements
+          const card = document.createElement("div");
+          card.classList.add("card");
 
-            urls.push({ url: element.embedUrl, name: element.name });
-            elements.push({
-              type: "link",
-              url: element.embedUrl,
-              text: element.name,
-              style: {
-                italic: true,
-              },
-            });
+          const thumbnail = document.createElement("img");
+          thumbnail.classList.add("card-thumbnail");
+          thumbnail.src = metadata.thumbnail;
+          thumbnail.alt = "Document Thumbnail";
+
+          const cardContent = document.createElement("div");
+          cardContent.classList.add("card-content");
+
+          const title = document.createElement("h3");
+          title.classList.add("card-title");
+          title.textContent = metadata.title;
+
+          const ownerInfo = document.createElement("p");
+          ownerInfo.classList.add("card-info");
+          ownerInfo.innerHTML = `Owner: <span>${metadata.owner}</span>`;
+
+          const modifiedInfo = document.createElement("p");
+          modifiedInfo.classList.add("card-info");
+          modifiedInfo.innerHTML = `Last Modified: <span>${metadata.modified}</span>`;
+
+          // Append elements to card content
+          cardContent.appendChild(title);
+          cardContent.appendChild(ownerInfo);
+          cardContent.appendChild(modifiedInfo);
+
+          // Append thumbnail and card content to card
+          card.appendChild(thumbnail);
+          card.appendChild(cardContent);
+          document.getElementById("selected-files").appendChild(card);
+          document
+            .getElementById("selected-files")
+            .appendChild(document.createElement("br"));
+          document
+            .getElementById("selected-files")
+            .appendChild(document.createElement("br"));
+
+          urls.push({ url: element.embedUrl, name: element.name });
+          elements.push({
+            type: "link",
+            url: element.embedUrl,
+            text: element.name,
+            style: {
+              italic: true,
+            },
           });
+          // });
           const blocks = [
             {
               type: "rich_text",
@@ -339,7 +417,7 @@ limitations under the License.
             .then(async (res) => await res.json())
             .then((result) => {
               console.log("pickerCallback  result:", result);
-              alert("Document attached successfully!")
+              alert("Document attached successfully!");
             })
             .catch((error) => {
               console.log("pickerCallback  error:", error);

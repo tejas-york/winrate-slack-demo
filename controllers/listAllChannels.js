@@ -8,22 +8,30 @@ const listAllChannels = async (req, res) => {
       channels: [],
     };
     if (limit) {
-      channelInfo = await slackUserApp.client.conversations.list({
+      channelInfo = await slackApp.client.conversations.list({
         limit,
         ...rest,
       });
     } else {
       /* Get all channels if limit is not provided */
-      let cursor = {};
+      let cursor = null;
       while (true) {
-        const channelResponse = await slackUserApp.client.conversations.list({
-          limit,
-          ...cursor,
+        let payload = {
           ...rest,
+        };
+        if (limit) {
+          payload.limit = limit;
+        }
+        if (cursor) {
+          payload.cursor = cursor;
+        }
+        const channelResponse = await slackApp.client.conversations.list({
+          cursor,
         });
+
         channelInfo.channels.push(...channelResponse.channels);
-        cursor.cursor = channelResponse.response_metadata.next_cursor;
-        if (!cursor.cursor) {
+        cursor = channelResponse.response_metadata.next_cursor;
+        if (!cursor) {
           break;
         }
       }
