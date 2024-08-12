@@ -15,7 +15,7 @@ const handleSlackActions = async (req, res) => {
     console.log("handleSlackActions  actions:", actions)
     // Open a dialog to ask for file upload (if necessary)
     await webClient.views.open({
-      trigger_id: trigger_id,
+      trigger_id: actions.trigger_id,
       view: {
         type: "modal",
         callback_id: "view_lenovo_deal",
