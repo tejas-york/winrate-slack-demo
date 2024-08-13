@@ -12,10 +12,11 @@ const handleSlackActions = async (req, res) => {
     // You can perform any action here
     console.log("uploadCommand  req.body:", req.body);
     const { trigger_id, actions } = req.body;
+    console.log("handleSlackActions  trigger_id:", trigger_id)
     console.log("handleSlackActions  actions:", actions)
     // Open a dialog to ask for file upload (if necessary)
     await webClient.views.open({
-      trigger_id: actions.trigger_id,
+      trigger_id: trigger_id,
       view: {
         type: "modal",
         callback_id: "view_lenovo_deal",
