@@ -19,9 +19,10 @@ const handleSlackActions = async (req, res) => {
       trigger_id: trigger_id,
       view: {
         type: "modal",
+        callback_id: "view_lenovo_deal",
         title: {
           type: "plain_text",
-          text: "My App",
+          text: "Winrate",
           emoji: true,
         },
         close: {
