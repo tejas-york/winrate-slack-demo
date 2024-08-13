@@ -10,10 +10,10 @@ const slackApp = require(".").slackApp;
 const handleSlackActions = async (req, res) => {
   try {
     // You can perform any action here
-    console.log("uploadCommand  req.body:", req.body);
-    const { trigger_id, actions } = req.body;
-    console.log("handleSlackActions  trigger_id:", trigger_id)
-    console.log("handleSlackActions  actions:", actions)
+    const { payload } = req.body;
+    console.log("handleSlackActions  payload:", payload);
+    const { trigger_id } = JSON.parse(payload);
+    console.log("handleSlackActions  trigger_id:", trigger_id);
     // Open a dialog to ask for file upload (if necessary)
     await webClient.views.open({
       trigger_id: trigger_id,
