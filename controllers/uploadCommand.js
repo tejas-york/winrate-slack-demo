@@ -10,8 +10,8 @@ const slackApp = require(".").slackApp;
 const uploadCommand = async (req, res) => {
   try {
     // You can perform any action here
-    console.log("uploadCommand  req.body:", req.body);
-    const { trigger_id, user_id, channel_id } = req.body;
+    const { payload } = req.body;
+    const { trigger_id, user_id, channel_id } = JSON.parse(payload);
     // Open a dialog to ask for file upload (if necessary)
     await webClient.chat.postEphemeral({
       trigger_id: trigger_id,
