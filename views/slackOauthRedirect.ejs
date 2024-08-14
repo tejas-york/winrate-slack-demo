@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Query Parameters to JSON</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      pre {
+        background-color: #f4f4f4;
+        padding: 10px;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Query Parameters to JSON</h1>
+    <p>The query parameters in the URL are displayed below in JSON format:</p>
+    <pre id="jsonOutput"></pre>
+
+    <script>
+      // Function to get query parameters as an object
+      function getQueryParams() {
+        const params = new URLSearchParams(window.location.search);
+        const queryParams = {};
+        for (const [key, value] of params.entries()) {
+          queryParams[key] = value;
+        }
+        return queryParams;
+      }
+
+      // Convert the query parameters to JSON format
+      const queryParams = getQueryParams();
+      const jsonOutput = JSON.stringify(queryParams, null, 4);
+
+      // Display the JSON output in the HTML page
+      document.getElementById("jsonOutput").textContent = jsonOutput;
+    </script>
+  </body>
+</html>
