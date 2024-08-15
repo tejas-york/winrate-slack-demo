@@ -1,4 +1,4 @@
-const { slackApp } = require(".");
+const { slackApp, slackUserApp } = require(".");
 
 /* Search messages globally */
 const handleSlackOauthRedirect = async (req, res) => {
