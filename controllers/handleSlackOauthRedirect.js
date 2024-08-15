@@ -20,6 +20,7 @@ const handleSlackOauthRedirect = async (req, res) => {
         client_secret: process.env.SLACK_CLIENT_SECRET,
         grant_type: "authorization_code",
       });
+      console.log("handleSlackOauthRedirect  result:", result);
       const userInfo = await slackApp.client.openid.connect.userInfo({
         token: result.access_token,
       });
