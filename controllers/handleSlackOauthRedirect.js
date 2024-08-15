@@ -4,12 +4,12 @@ const { slackApp } = require(".");
 const handleSlackOauthRedirect = async (req, res) => {
   try {
     const { code } = req.query;
-
     const result = await slackApp.client.openid.connect.token({
-      client_id: "658222360132.7302583507348",
+      client_id: process.env.SLACK_CLIENT_ID,
       code,
       redirect_uri:
         "https://winrate-slack-demo.onrender.com/slack-oauth-redirect",
+      client_secret: process.env.SLACK_CLIENT_SECRET,
     });
     return res.status(200).json({
       message: "Successfully handled oauth...",
