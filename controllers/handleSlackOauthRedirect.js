@@ -11,19 +11,25 @@ const handleSlackOauthRedirect = async (req, res) => {
       "handleSlackOauthRedirect  process.env.SLACK_CLIENT_SECRET:",
       process.env.SLACK_CLIENT_SECRET
     );
-    const { code } = req.query;
-    const result = await slackApp.client.openid.connect.token({
-      client_id: process.env.SLACK_CLIENT_ID,
-      code,
-      redirect_uri:
-        "https://winrate-slack-demo.onrender.com/slack-oauth-redirect",
-      client_secret: process.env.SLACK_CLIENT_SECRET,
-      grant_type: 'authorization_code',
-    });
-    return res.status(200).json({
-      message: "Successfully handled oauth...",
-      data: result,
-    });
+    if (req.query.code) {
+      const result = await slackApp.client.openid.connect.token({
+        client_id: process.env.SLACK_CLIENT_ID,
+        code: req.query.code,
+        redirect_uri:
+          "https://winrate-slack-demo.onrender.com/api/handle-slack-oauth-redirect",
+        client_secret: process.env.SLACK_CLIENT_SECRET,
+        grant_type: "authorization_code",
+      });
+      return res.status(200).json({
+        message: "Successfully handled oauth...",
+        data: result,
+      });
+    } else {
+      return res.status(200).json({
+        message: "Successfully handled oauth...",
+        data: req.query,
+      });
+    }
   } catch (error) {
     console.log("searchMessages  error:", error);
     res.status(400).json({
