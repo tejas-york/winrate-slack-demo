@@ -18,15 +18,19 @@ const handleSlackActions = async (req, res) => {
       trigger_id: trigger_id,
       view: {
         type: "modal",
-        callback_id: "view_lenovo_deal",
         title: {
           type: "plain_text",
-          text: "Winrate",
+          text: "My App",
+          emoji: true,
+        },
+        submit: {
+          type: "plain_text",
+          text: "Submit",
           emoji: true,
         },
         close: {
           type: "plain_text",
-          text: "Close",
+          text: "Cancel",
           emoji: true,
         },
         blocks: [
@@ -105,17 +109,6 @@ const handleSlackActions = async (req, res) => {
                 type: "button",
                 text: {
                   type: "plain_text",
-                  text: "Message",
-                  emoji: true,
-                },
-                value: "message_john_smith",
-                action_id: "button_message_john_smith",
-                style: "primary",
-              },
-              {
-                type: "button",
-                text: {
-                  type: "plain_text",
                   text: "View Profile",
                   emoji: true,
                 },
@@ -144,17 +137,6 @@ const handleSlackActions = async (req, res) => {
           {
             type: "actions",
             elements: [
-              {
-                type: "button",
-                text: {
-                  type: "plain_text",
-                  text: "Message",
-                  emoji: true,
-                },
-                value: "message_jane_doe",
-                action_id: "button_message_jane_doe",
-                style: "primary",
-              },
               {
                 type: "button",
                 text: {
@@ -191,17 +173,6 @@ const handleSlackActions = async (req, res) => {
                 type: "button",
                 text: {
                   type: "plain_text",
-                  text: "Message",
-                  emoji: true,
-                },
-                value: "message_emily_johnson",
-                action_id: "button_message_emily_johnson",
-                style: "primary",
-              },
-              {
-                type: "button",
-                text: {
-                  type: "plain_text",
                   text: "View Profile",
                   emoji: true,
                 },
@@ -234,17 +205,6 @@ const handleSlackActions = async (req, res) => {
                 type: "button",
                 text: {
                   type: "plain_text",
-                  text: "Message",
-                  emoji: true,
-                },
-                value: "message_michael_brown",
-                action_id: "button_message_michael_brown",
-                style: "primary",
-              },
-              {
-                type: "button",
-                text: {
-                  type: "plain_text",
                   text: "View Profile",
                   emoji: true,
                 },
@@ -273,17 +233,6 @@ const handleSlackActions = async (req, res) => {
           {
             type: "actions",
             elements: [
-              {
-                type: "button",
-                text: {
-                  type: "plain_text",
-                  text: "Message",
-                  emoji: true,
-                },
-                value: "message_sarah_wilson",
-                action_id: "button_message_sarah_wilson",
-                style: "primary",
-              },
               {
                 type: "button",
                 text: {
