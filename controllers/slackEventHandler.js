@@ -42,48 +42,11 @@ const renderAppHome = async (user_id) => {
         type: "home",
         blocks: [
           {
-            type: "header",
-            text: {
-              type: "plain_text",
-              text: "Deal Overview",
-              emoji: true,
-            },
-          },
-          {
             type: "section",
             text: {
               type: "mrkdwn",
-              text: ":trophy: *Lenovo Deal*",
+              text: ":rocket: _Streamline Your Sales Journey with *Winrate*_ :trophy:",
             },
-          },
-          {
-            type: "divider",
-          },
-          {
-            type: "section",
-            fields: [
-              {
-                type: "mrkdwn",
-                text: "*Amount:* \n:moneybag: *$50,000*",
-              },
-              {
-                type: "mrkdwn",
-                text: "*Status:* \n:white_check_mark: *Won*",
-              },
-            ],
-          },
-          {
-            type: "section",
-            fields: [
-              {
-                type: "mrkdwn",
-                text: "*Deal Owner:* \n:bust_in_silhouette: *Mark Doe*",
-              },
-              {
-                type: "mrkdwn",
-                text: "*Members Involved:* \n:family: *5*",
-              },
-            ],
           },
           {
             type: "divider",
@@ -92,36 +55,26 @@ const renderAppHome = async (user_id) => {
             type: "header",
             text: {
               type: "plain_text",
-              text: "Deal Members",
+              text: "📬 Your Notifications",
               emoji: true,
             },
           },
           {
+            type: "divider",
+          },
+          {
             type: "section",
-            accessory: {
-              type: "image",
-              image_url:
-                "https://api.slack.com/img/blocks/bkb_template_images/profile_1.png",
-              alt_text: "John Smith",
-            },
             text: {
               type: "mrkdwn",
-              text: "*John Smith*\n:email: john.smith@example.com",
+              text: "*Deal Update*\n*Jack* has updated the deal status of *Lenovo* to *Won*.",
             },
           },
           {
-            type: "actions",
+            type: "context",
             elements: [
               {
-                type: "button",
-                text: {
-                  type: "plain_text",
-                  text: "View Profile",
-                  emoji: true,
-                },
-                url: "https://york-ie.slack.com/team/U0712DF0ZUK",
-                value: "view_profile_john_smith",
-                action_id: "button_view_profile_john_smith",
+                type: "mrkdwn",
+                text: ":clock4: Today at 4:00 PM",
               },
             ],
           },
@@ -130,30 +83,17 @@ const renderAppHome = async (user_id) => {
           },
           {
             type: "section",
-            accessory: {
-              type: "image",
-              image_url:
-                "https://api.slack.com/img/blocks/bkb_template_images/profile_2.png",
-              alt_text: "Jane Doe",
-            },
             text: {
               type: "mrkdwn",
-              text: "*Jane Doe*\n:email: jane.doe@example.com",
+              text: ":file_folder: *Library*\nNew document attached to the *Dominos* deal.",
             },
           },
           {
-            type: "actions",
+            type: "context",
             elements: [
               {
-                type: "button",
-                text: {
-                  type: "plain_text",
-                  text: "View Profile",
-                  emoji: true,
-                },
-                url: "https://york-ie.slack.com/team/U0712DF0ZUK",
-                value: "view_profile_jane_doe",
-                action_id: "button_view_profile_jane_doe",
+                type: "mrkdwn",
+                text: ":clock330: Today at 3:30 PM",
               },
             ],
           },
@@ -162,15 +102,49 @@ const renderAppHome = async (user_id) => {
           },
           {
             type: "section",
-            accessory: {
-              type: "image",
-              image_url:
-                "https://api.slack.com/img/blocks/bkb_template_images/profile_3.png",
-              alt_text: "Emily Johnson",
-            },
             text: {
               type: "mrkdwn",
-              text: "*Emily Johnson*\n:email: emily.johnson@example.com",
+              text: "*Deal Update*\n*Mark* has updated the deal status of *Dell* to *Lost*.",
+            },
+          },
+          {
+            type: "context",
+            elements: [
+              {
+                type: "mrkdwn",
+                text: ":clock230: Today at 2:30 PM",
+              },
+            ],
+          },
+          {
+            type: "divider",
+          },
+          {
+            type: "header",
+            text: {
+              type: "plain_text",
+              text: "📊 Deal Rooms",
+              emoji: true,
+            },
+          },
+          {
+            type: "divider",
+          },
+          {
+            type: "section",
+            text: {
+              type: "mrkdwn",
+              text: "Click here to create new deal",
+            },
+            accessory: {
+              type: "button",
+              text: {
+                type: "plain_text",
+                text: "Create Deal",
+                emoji: true,
+              },
+              value: "click_me_123",
+              action_id: "button-action",
             },
           },
           {
@@ -180,12 +154,31 @@ const renderAppHome = async (user_id) => {
                 type: "button",
                 text: {
                   type: "plain_text",
-                  text: "View Profile",
+                  text: "Won",
                   emoji: true,
                 },
-                url: "https://york-ie.slack.com/team/U0712DF0ZUK",
-                value: "view_profile_emily_johnson",
-                action_id: "button_view_profile_emily_johnson",
+                value: "won-filter",
+                action_id: "won-filter-action",
+              },
+              {
+                type: "button",
+                text: {
+                  type: "plain_text",
+                  text: "Lost",
+                  emoji: true,
+                },
+                value: "lost-filter",
+                action_id: "lost-filter-action",
+              },
+              {
+                type: "button",
+                text: {
+                  type: "plain_text",
+                  text: "In Progress",
+                  emoji: true,
+                },
+                value: "inprogress-filter",
+                action_id: "inprogress-filter-action",
               },
             ],
           },
@@ -194,64 +187,66 @@ const renderAppHome = async (user_id) => {
           },
           {
             type: "section",
-            accessory: {
-              type: "image",
-              image_url:
-                "https://api.slack.com/img/blocks/bkb_template_images/profile_4.png",
-              alt_text: "Michael Brown",
-            },
             text: {
               type: "mrkdwn",
-              text: "*Michael Brown*\n:email: michael.brown@example.com",
+              text: "*Lenovo Deal*\n*Amount:* :moneybag: $50,000\n*Status:* :white_check_mark: Won",
             },
-          },
-          {
-            type: "actions",
-            elements: [
-              {
-                type: "button",
-                text: {
-                  type: "plain_text",
-                  text: "View Profile",
-                  emoji: true,
-                },
-                url: "https://york-ie.slack.com/team/U0712DF0ZUK",
-                value: "view_profile_michael_brown",
-                action_id: "button_view_profile_michael_brown",
+            accessory: {
+              type: "button",
+              text: {
+                type: "plain_text",
+                text: "View",
+                emoji: true,
               },
-            ],
+              value: "view_lenovo_deal",
+              action_id: "view_lenovo_deal",
+              style: "primary",
+            },
           },
           {
             type: "divider",
           },
           {
             type: "section",
-            accessory: {
-              type: "image",
-              image_url:
-                "https://api.slack.com/img/blocks/bkb_template_images/profile_1.png",
-              alt_text: "Sarah Wilson",
-            },
             text: {
               type: "mrkdwn",
-              text: "*Sarah Wilson*\n:email: sarah.wilson@example.com",
+              text: "*Dominos Deal*\n*Amount:* :moneybag: $30,000\n*Status:* :hourglass_flowing_sand: In Progress",
+            },
+            accessory: {
+              type: "button",
+              text: {
+                type: "plain_text",
+                text: "View",
+                emoji: true,
+              },
+              value: "view_lenovo_deal",
+              action_id: "view_lenovo_deal",
+              style: "primary",
             },
           },
           {
-            type: "actions",
-            elements: [
-              {
-                type: "button",
-                text: {
-                  type: "plain_text",
-                  text: "View Profile",
-                  emoji: true,
-                },
-                value: "view_profile_sarah_wilson",
-                url: "https://york-ie.slack.com/team/U0712DF0ZUK",
-                action_id: "button_view_profile_sarah_wilson",
+            type: "divider",
+          },
+          {
+            type: "section",
+            text: {
+              type: "mrkdwn",
+              text: "*Dell Deal*\n*Amount:* :moneybag: $75,000\n*Status:* :x: Lost",
+            },
+            accessory: {
+              type: "button",
+              text: {
+                type: "plain_text",
+                text: "View",
+                emoji: true,
               },
-            ],
+              value: "view_lenovo_deal",
+              action_id: "view_lenovo_deal",
+              style: "primary",
+            },
+          },
+          {
+            type: "divider",
           },
         ],
       },
