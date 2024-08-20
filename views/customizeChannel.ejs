@@ -195,7 +195,7 @@
 
     <script>
       // URL of the API to fetch channel data
-      const apiUrl = "/api/list-all-channels?limit=50"; // Replace with your actual API endpoint
+      const apiUrl = "/api/list-all-channels"; // Replace with your actual API endpoint
       const putApiUrl = "/api/rename-channel"; // Replace with your actual POST API endpoint
 
       // Elements
@@ -273,7 +273,7 @@
 
         // Send form data to the POST API
         try {
-          const response = await fetch(putApiUrl + '/' + channelSelect.value, {
+          const response = await fetch(putApiUrl + "/" + channelSelect.value, {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",

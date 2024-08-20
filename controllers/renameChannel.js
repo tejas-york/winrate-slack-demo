@@ -25,6 +25,7 @@ const renameChannel = async (req, res) => {
       channelInfo,
     });
   } catch (error) {
+    console.log("renameChannel  error:", error.data)
     res.status(400).json({
       message: "Something went wrong!, " + error.message,
     });

@@ -3,9 +3,8 @@ const { webClient } = require(".");
 const slackApp = require(".").slackApp;
 
 /**
- * @description Create channel and invite external channel with
- * @param channel string
- * @param user string
+ * @description This api will handle the actions performed by users in slack like button click in app home.
+ * @returns The output to the user in slack
  */
 const handleSlackActions = async (req, res) => {
   try {
