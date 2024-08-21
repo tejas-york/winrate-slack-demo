@@ -23,10 +23,9 @@ const handleSlackOauthRedirect = async (req, res) => {
       });
       const decoded = decode(result.id_token);
       console.log("handleSlackOauthRedirect  decoded:", decoded);
-      return res.status(200).json({
-        message: "Successfully handled oauth...",
-        data: result,
-      });
+      return res.redirect(
+        `https://slack.com/app_redirect?team=${decoded["https://slack.com/team_id"]}&channel=C07EKUU9THB`
+      );
     } else {
       return res.status(200).json({
         message: "Successfully handled oauth...",
