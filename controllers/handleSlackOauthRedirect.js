@@ -1,4 +1,5 @@
 const { slackApp, slackUserApp } = require(".");
+const { decode } = require("jsonwebtoken");
 
 /* Search messages globally */
 const handleSlackOauthRedirect = async (req, res) => {
@@ -20,6 +21,8 @@ const handleSlackOauthRedirect = async (req, res) => {
         client_secret: process.env.SLACK_CLIENT_SECRET,
         grant_type: "authorization_code",
       });
+      const decoded = decode(result.id_token);
+      console.log("handleSlackOauthRedirect  decoded:", decoded);
       return res.status(200).json({
         message: "Successfully handled oauth...",
         data: result,

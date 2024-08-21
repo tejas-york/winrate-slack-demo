@@ -143,8 +143,9 @@ const renderAppHome = async (user_id) => {
                 text: "Create Deal",
                 emoji: true,
               },
-              value: "click_me_123",
-              action_id: "button-action",
+              value: "create-deal-action-value",
+              action_id: "create-deal-action-id",
+              style: "primary",
             },
           },
           {

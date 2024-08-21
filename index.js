@@ -45,6 +45,7 @@ app.get("/join-channel", (_, res) => res.render("joinChannel"));
 app.get("/dealrooms", (_, res) => res.render("dealrooms"));
 app.get("/slack-oauth-redirect", (_, res) => res.render("slackOauthRedirect"));
 app.get("/slack-login", (_, res) => res.render("slackLogin"));
+app.get("/slack-enterprise-login", (_, res) => res.render("slackEnterpriseLogin"));
 
 /* Controller Routes */
 app.get("/api/test", test);
