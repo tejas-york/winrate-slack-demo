@@ -1,4 +1,9 @@
 const { webClient } = require(".");
+const {
+  getAppHomeView,
+  errorView,
+  successView,
+} = require("../helper/slack-utils");
 
 const slackApp = require(".").slackApp;
 
@@ -7,30 +12,87 @@ const slackApp = require(".").slackApp;
  * @returns The output to the user in slack
  */
 const handleSlackActions = async (req, res) => {
+  const { payload } = req.body;
+  const { trigger_id, actions, user } = JSON.parse(payload);
   try {
     // You can perform any action here
-    const { payload } = req.body;
-    console.log("handleSlackActions  payload:", payload);
-    const { trigger_id } = JSON.parse(payload);
-    console.log("handleSlackActions  trigger_id:", trigger_id);
     // Open a dialog to ask for file upload (if necessary)
-    if (payload.actions[0].action_id === "create-deal-action-id") {
-      await webClient.views.open({
-        trigger_id: trigger_id,
-        view: createDealBlocks(),
-      });
-    } else {
-      await webClient.views.open({
-        trigger_id: trigger_id,
-        view: viewDealBlocks(),
-      });
+    if (actions.length) {
+      const action_id = actions[0].action_id;
+      if (action_id === "create-deal") {
+        await webClient.views.open({
+          trigger_id: trigger_id,
+          view: createDealBlocks(),
+        });
+      } else if (action_id === "create-deal") {
+        await webClient.views.open({
+          trigger_id: trigger_id,
+          view: createDealBlocks(),
+        });
+      } else if (action_id === "sort-action") {
+        const selected_option = actions[0].selected_option;
+        await slackApp.client.views.publish({
+          user_id: user.id,
+          view: getAppHomeView(selected_option),
+        });
+      } else if (action_id === "filter-action-opp-stage") {
+        const selected_option = actions[0].selected_option;
+        await slackApp.client.views.publish({
+          user_id: user.id,
+          view: getAppHomeView(null, selected_option),
+        });
+      } else if (action_id === "filter-action-deal-status") {
+        const selected_option = actions[0].selected_option;
+        await slackApp.client.views.publish({
+          user_id: user.id,
+          view: getAppHomeView(null, null, selected_option),
+        });
+      } else if (action_id === "filter-action-team") {
+        const selected_option = actions[0].selected_option;
+        await slackApp.client.views.publish({
+          user_id: user.id,
+          view: getAppHomeView(null, null, null, selected_option),
+        });
+      } else if (action_id === "filter-action-user") {
+        const selected_option = actions[0].selected_option;
+        await slackApp.client.views.publish({
+          user_id: user.id,
+          view: getAppHomeView(null, null, null, null, selected_option),
+        });
+      } else if (action_id === "filter-action-last-activity") {
+        console.log("handleSlackActions  action_id:", action_id);
+        const selected_option = actions[0].selected_option;
+        const view = getAppHomeView(
+          null,
+          null,
+          null,
+          null,
+          null,
+          selected_option
+        );
+        await slackApp.client.views.publish({
+          user_id: user.id,
+          view,
+        });
+      } else if (action_id === "join-channel") {
+        const channel_id = actions[0].value;
+        await slackApp.client.conversations.invite({
+          users: user.id,
+          channel: channel_id,
+        });
+        await webClient.views.open({
+          trigger_id: trigger_id,
+          view: successView("Successfully joined the channel!"),
+        });
+      }
     }
 
     res.send();
   } catch (error) {
-    res.send({
-      response_type: "in_channel", // or 'ephemeral' for private messages
-      text: error.message || "Something went wrong!",
+    console.log("handleSlackActions  error:", error);
+    await webClient.views.open({
+      trigger_id: trigger_id,
+      view: errorView(),
     });
   }
 };
@@ -41,127 +103,107 @@ module.exports = handleSlackActions;
 const createDealBlocks = () => {
   return {
     type: "modal",
-    callback_id: "deal_creation_modal",
     title: {
       type: "plain_text",
-      text: "Create New Deal",
+      text: "Create deal room",
+      emoji: true,
     },
     submit: {
       type: "plain_text",
       text: "Submit",
+      emoji: true,
     },
     close: {
       type: "plain_text",
       text: "Cancel",
+      emoji: true,
     },
     blocks: [
       {
-        type: "input",
-        block_id: "deal_name_block",
-        element: {
-          type: "plain_text_input",
-          action_id: "deal_name_input",
-          placeholder: {
-            type: "plain_text",
-            text: "Enter deal name",
-          },
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "Select channel type",
         },
-        label: {
-          type: "plain_text",
-          text: "Deal Name",
-        },
-      },
-      {
-        type: "input",
-        block_id: "deal_amount_block",
-        element: {
-          type: "plain_text_input",
-          action_id: "deal_amount_input",
-          placeholder: {
-            type: "plain_text",
-            text: "Enter deal amount",
-          },
-        },
-        label: {
-          type: "plain_text",
-          text: "Deal Amount",
+        accessory: {
+          type: "radio_buttons",
+          options: [
+            {
+              text: {
+                type: "plain_text",
+                text: "*External*",
+                emoji: true,
+              },
+              value: "value-0",
+            },
+            {
+              text: {
+                type: "plain_text",
+                text: "*Internal*",
+                emoji: true,
+              },
+              value: "value-1",
+            },
+          ],
+          action_id: "radio_buttons-action",
         },
       },
       {
-        type: "input",
-        block_id: "deal_members_block",
-        element: {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "Map opportunity",
+        },
+        accessory: {
+          type: "multi_static_select",
+          placeholder: {
+            type: "plain_text",
+            text: "Select options",
+            emoji: true,
+          },
+          options: [
+            {
+              text: {
+                type: "plain_text",
+                text: "*Dell Inc*",
+                emoji: true,
+              },
+              value: "value-0",
+            },
+            {
+              text: {
+                type: "plain_text",
+                text: "*Apple*",
+                emoji: true,
+              },
+              value: "value-1",
+            },
+            {
+              text: {
+                type: "plain_text",
+                text: "*Dominos*",
+                emoji: true,
+              },
+              value: "value-2",
+            },
+          ],
+          action_id: "multi_static_select-action",
+        },
+      },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "Add members",
+        },
+        accessory: {
           type: "multi_users_select",
-          action_id: "deal_members_select",
           placeholder: {
             type: "plain_text",
-            text: "Select deal members",
+            text: "Select conversations",
+            emoji: true,
           },
-        },
-        label: {
-          type: "plain_text",
-          text: "Deal Members",
-        },
-      },
-      {
-        type: "input",
-        block_id: "launch_external_block",
-        element: {
-          type: "checkboxes",
-          action_id: "launch_external_checkbox",
-          options: [
-            {
-              text: {
-                type: "plain_text",
-                text: "Launch External",
-              },
-              value: "launch_external",
-            },
-          ],
-        },
-        label: {
-          type: "plain_text",
-          text: "Options",
-        },
-        optional: true,
-      },
-      {
-        type: "input",
-        block_id: "opportunity_stage_block",
-        element: {
-          type: "static_select",
-          action_id: "opportunity_stage_select",
-          placeholder: {
-            type: "plain_text",
-            text: "Choose opportunity stage",
-          },
-          options: [
-            {
-              text: {
-                type: "plain_text",
-                text: "Prospecting",
-              },
-              value: "prospecting",
-            },
-            {
-              text: {
-                type: "plain_text",
-                text: "Negotiation",
-              },
-              value: "negotiation",
-            },
-            {
-              text: {
-                type: "plain_text",
-                text: "Closed",
-              },
-              value: "closed",
-            },
-          ],
-        },
-        label: {
-          type: "plain_text",
-          text: "Opportunity Stage",
+          action_id: "multi_users_select-action",
         },
       },
     ],

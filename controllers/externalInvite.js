@@ -44,10 +44,11 @@ const externalInvite = async (req, res) => {
     /* Invite external users to the channel */
     for (let i = 0; i < externalUserEmails.length; i++) {
       const email = externalUserEmails[i];
-      await slackApp.client.conversations.inviteShared({
+      const externalInvite = await slackApp.client.conversations.inviteShared({
         emails: [email],
         channel: conversation.channel.id,
       });
+      console.log("externalInvite  externalInvite:", externalInvite)
     }
     if (markdown) {
       const canvas = await webClient.conversations.canvases.create({

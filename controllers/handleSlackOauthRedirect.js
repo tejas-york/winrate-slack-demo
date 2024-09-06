@@ -1,30 +1,34 @@
-const { slackApp, slackUserApp } = require(".");
-const { decode } = require("jsonwebtoken");
+const { slackApp, slackUserApp, slackEnterpriseApp, slackEnterpriseUserApp } = require(".");
 
 /* Search messages globally */
 const handleSlackOauthRedirect = async (req, res) => {
   try {
     console.log(
-      "handleSlackOauthRedirect  process.env.SLACK_CLIENT_ID:",
-      process.env.SLACK_CLIENT_ID
+      "handleSlackOauthRedirect  process.env.SLACK_ENTERPRISE_CLIENT_ID:",
+      process.env.SLACK_ENTERPRISE_CLIENT_ID
     );
     console.log(
-      "handleSlackOauthRedirect  process.env.SLACK_CLIENT_SECRET:",
-      process.env.SLACK_CLIENT_SECRET
+      "handleSlackOauthRedirect  process.env.SLACK_ENTERPRISE_CLIENT_SECRET:",
+      process.env.SLACK_ENTERPRISE_CLIENT_SECRET
     );
+    const { code } = req.query;
     if (req.query.code) {
-      const result = await slackApp.client.openid.connect.token({
-        client_id: process.env.SLACK_CLIENT_ID,
-        code: req.query.code,
-        redirect_uri:
-          "https://winrate-slack-demo.onrender.com/api/handle-slack-oauth-redirect",
-        client_secret: process.env.SLACK_CLIENT_SECRET,
-        grant_type: "authorization_code",
+      const oauthV2 = await slackEnterpriseUserApp.client.oauth.v2.access({
+        client_id: process.env.SLACK_ENTERPRISE_CLIENT_ID,
+        client_secret: process.env.SLACK_ENTERPRISE_CLIENT_SECRET,
+        redirect_uri: "http://localhost:3000/api/handle-slack-oauth-redirect",
+        code,
       });
-      const decoded = decode(result.id_token);
-      console.log("handleSlackOauthRedirect  decoded:", decoded);
+      console.log("handleSlackOauthRedirect  oauthV2:", oauthV2);
+      const users = oauthV2.authed_user.id;
+      console.log("handleSlackOauthRedirect  users:", users);
+      const invite = await slackEnterpriseUserApp.client.admin.conversations.invite({
+        channel_id: "C07JDCDDADP",
+        user_ids: users,
+      });
+      console.log("handleSlackOauthRedirect  invite:", invite);
       return res.redirect(
-        `https://slack.com/app_redirect?team=${decoded["https://slack.com/team_id"]}&channel=C07EKUU9THB`
+        `https://slack.com/app_redirect?team=T07HMMLNJUT&channel=C07JDCDDADP`
       );
     } else {
       return res.status(200).json({
