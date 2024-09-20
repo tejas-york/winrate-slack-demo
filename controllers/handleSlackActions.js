@@ -3,6 +3,7 @@ const {
   getAppHomeView,
   errorView,
   successView,
+  editDealBlocks,
 } = require("../helper/slack-utils");
 
 const slackApp = require(".").slackApp;
@@ -19,6 +20,7 @@ const handleSlackActions = async (req, res) => {
     // Open a dialog to ask for file upload (if necessary)
     if (actions.length) {
       const action_id = actions[0].action_id;
+      console.log("handleSlackActions  action_id:", action_id);
       if (action_id === "create-deal") {
         await webClient.views.open({
           trigger_id: trigger_id,
@@ -59,7 +61,24 @@ const handleSlackActions = async (req, res) => {
           user_id: user.id,
           view: getAppHomeView(null, null, null, null, selected_option),
         });
-      } else if (action_id === "filter-action-last-activity") {
+      } else if (action_id === "filter-action-opp-type") {
+        const selected_option = actions[0].selected_option;
+        await slackApp.client.views.publish({
+          user_id: user.id,
+          view: getAppHomeView(
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            selected_option
+          ),
+        });
+      } else if (
+        action_id === "filter-action-last-activity" ||
+        action_id === "filter-action-close-date"
+      ) {
         console.log("handleSlackActions  action_id:", action_id);
         const selected_option = actions[0].selected_option;
         const view = getAppHomeView(
@@ -83,6 +102,38 @@ const handleSlackActions = async (req, res) => {
         await webClient.views.open({
           trigger_id: trigger_id,
           view: successView("Successfully joined the channel!"),
+        });
+      } else if (action_id === "edit") {
+        console.log("handleSlackActions  action_id:", action_id);
+        const selected_option = actions[0].selected_option;
+        // if (selected_option.value === "edit") {
+        await webClient.views.open({
+          trigger_id: trigger_id,
+          view: editDealBlocks(
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            selected_option
+          ),
+        });
+        // }
+      } else if (action_id === "filter-forcast-categories") {
+        const selected_option = actions[0].selected_option;
+        await slackApp.client.views.publish({
+          user_id: user.id,
+          view: getAppHomeView(
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            selected_option
+          ),
         });
       }
     }

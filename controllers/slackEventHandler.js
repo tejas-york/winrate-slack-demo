@@ -5,7 +5,6 @@ const { getAppHomeView } = require("../helper/slack-utils");
 const slackEventHandler = async (req, res) => {
   try {
     const { type, challenge, event } = req.body;
-    console.log("DATE----", new Date().toLocaleTimeString());
 
     console.log("slackEventHandler  type:", type);
     /* Handle event of url verification */
@@ -24,7 +23,6 @@ const slackEventHandler = async (req, res) => {
     // Handle event when someone opens the app home
     if (type === "event_callback" && event.type === "app_home_opened") {
       const view = getAppHomeView()
-      console.log("slackEventHandler  view:", JSON.stringify(view))
       await slackApp.client.views.publish({
         user_id: event.user,
         view,

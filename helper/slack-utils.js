@@ -5,14 +5,16 @@ const getAppHomeView = (
   deal_status_filter,
   team_filter,
   user_filter,
-  last_activity
+  last_activity,
+  opp_type,
+  forecast_category
 ) => {
-  console.log("last_activity:", last_activity)
   let initial_sort_option = {};
   let initial_filter_option = {};
-  let initial_deal_status_filter_option = {};
   let initial_team_filter_option = {};
   let initial_last_activity_option = {};
+  let initial_opp_type_option = {};
+  let initial_forecast_category_option = {};
   const date_range = [];
   if (sort) {
     initial_sort_option = {
@@ -24,11 +26,6 @@ const getAppHomeView = (
       initial_option: opp_filter,
     };
   }
-  if (deal_status_filter) {
-    initial_deal_status_filter_option = {
-      initial_option: deal_status_filter,
-    };
-  }
   if (team_filter) {
     initial_team_filter_option = {
       initial_option: team_filter,
@@ -37,6 +34,16 @@ const getAppHomeView = (
   if (last_activity) {
     initial_last_activity_option = {
       initial_option: last_activity,
+    };
+  }
+  if (opp_type) {
+    initial_opp_type_option = {
+      initial_option: opp_type,
+    };
+  }
+  if (forecast_category) {
+    initial_forecast_category_option = {
+      initial_option: forecast_category,
     };
   }
   if (last_activity && last_activity.value === "range") {
@@ -88,65 +95,13 @@ const getAppHomeView = (
         type: "divider",
       },
 
-      // {
-      //   type: "section",
-      //   text: {
-      //     type: "mrkdwn",
-      //     text: "*Sort by : *",
-      //   },
-      //   accessory: {
-      //     type: "static_select",
-      //     placeholder: {
-      //       type: "plain_text",
-      //       text: "Select a sort column",
-      //       emoji: true,
-      //     },
-      //     ...initial_sort_option,
-      //     options: [
-      //       {
-      //         text: {
-      //           type: "plain_text",
-      //           text: "Sales Rep",
-      //           emoji: true,
-      //         },
-      //         value: "sales_rep",
-      //       },
-      //       {
-      //         text: {
-      //           type: "plain_text",
-      //           text: "Channel Name",
-      //           emoji: true,
-      //         },
-      //         value: "channel_name",
-      //       },
-      //       {
-      //         text: {
-      //           type: "plain_text",
-      //           text: "Oppertunity Stage",
-      //           emoji: true,
-      //         },
-      //         value: "opp_stage",
-      //       },
-      //       {
-      //         text: {
-      //           type: "plain_text",
-      //           text: "Status",
-      //           emoji: true,
-      //         },
-      //         value: "status",
-      //       },
-      //     ],
-      //     action_id: "sort-action",
-      //   },
-      // },
-
       // Sort Start
       {
         type: "context",
         elements: [
           {
             type: "plain_text",
-            text: "Sort By:",
+            text: "Sort Column By:",
             emoji: true,
           },
         ],
@@ -166,34 +121,34 @@ const getAppHomeView = (
               {
                 text: {
                   type: "plain_text",
-                  text: "Sales Rep",
+                  text: "Channel name",
                   emoji: true,
                 },
-                value: "sales_rep",
+                value: "channel",
               },
               {
                 text: {
                   type: "plain_text",
-                  text: "Channel Name",
+                  text: "Deal Value",
                   emoji: true,
                 },
-                value: "channel_name",
+                value: "deal_value",
               },
               {
                 text: {
                   type: "plain_text",
-                  text: "Oppertunity Stage",
+                  text: "Close Date",
                   emoji: true,
                 },
-                value: "opp_stage",
+                value: "close_date",
               },
               {
                 text: {
                   type: "plain_text",
-                  text: "Status",
+                  text: "Last Activity",
                   emoji: true,
                 },
-                value: "status",
+                value: "last_activity",
               },
             ],
             action_id: "sort-action",
@@ -219,6 +174,50 @@ const getAppHomeView = (
             type: "static_select",
             placeholder: {
               type: "plain_text",
+              text: "Opportunity type",
+              emoji: true,
+            },
+            ...initial_opp_type_option,
+            options: [
+              {
+                text: {
+                  type: "plain_text",
+                  text: "All",
+                  emoji: true,
+                },
+                value: "All",
+              },
+              {
+                text: {
+                  type: "plain_text",
+                  text: "New business",
+                  emoji: true,
+                },
+                value: "New business",
+              },
+              {
+                text: {
+                  type: "plain_text",
+                  text: "Renewal",
+                  emoji: true,
+                },
+                value: "Renewal",
+              },
+              {
+                text: {
+                  type: "plain_text",
+                  text: "Upsell",
+                  emoji: true,
+                },
+                value: "Upsell",
+              },
+            ],
+            action_id: "filter-action-opp-type",
+          },
+          {
+            type: "static_select",
+            placeholder: {
+              type: "plain_text",
               text: "Opportunity stage",
               emoji: true,
             },
@@ -235,26 +234,42 @@ const getAppHomeView = (
               {
                 text: {
                   type: "plain_text",
-                  text: "Negotiation",
+                  text: "Discovery call",
                   emoji: true,
                 },
-                value: "negotiation",
+                value: "Discovery call",
               },
               {
                 text: {
                   type: "plain_text",
-                  text: "Prospecting",
+                  text: "Demo Scheduled",
                   emoji: true,
                 },
-                value: "prospecting",
+                value: "Demo Scheduled",
               },
               {
                 text: {
                   type: "plain_text",
-                  text: "Qualification",
+                  text: "Proof of concept",
                   emoji: true,
                 },
-                value: "qualification",
+                value: "Proof of concept",
+              },
+              {
+                text: {
+                  type: "plain_text",
+                  text: "IT/Legal",
+                  emoji: true,
+                },
+                value: "IT/Legal",
+              },
+              {
+                text: {
+                  type: "plain_text",
+                  text: "Out for signature",
+                  emoji: true,
+                },
+                value: "Out for signature",
               },
             ],
             action_id: "filter-action-opp-stage",
@@ -263,37 +278,53 @@ const getAppHomeView = (
             type: "static_select",
             placeholder: {
               type: "plain_text",
-              text: "Deal status",
+              text: "Forecast categories",
               emoji: true,
             },
-            ...initial_deal_status_filter_option,
+            ...initial_forecast_category_option,
             options: [
               {
                 text: {
                   type: "plain_text",
-                  text: "All",
+                  text: "Bouncing ball",
                   emoji: true,
                 },
-                value: "all",
+                value: "Bouncing ball",
               },
               {
                 text: {
                   type: "plain_text",
-                  text: "Hot",
+                  text: "Upside",
                   emoji: true,
                 },
-                value: "hot",
+                value: "Upside",
               },
               {
                 text: {
                   type: "plain_text",
-                  text: "Cold",
+                  text: "High potential",
                   emoji: true,
                 },
-                value: "cold",
+                value: "High potential",
+              },
+              {
+                text: {
+                  type: "plain_text",
+                  text: "Commit",
+                  emoji: true,
+                },
+                value: "Commit",
+              },
+              {
+                text: {
+                  type: "plain_text",
+                  text: "Fulfillment",
+                  emoji: true,
+                },
+                value: "Fulfillment",
               },
             ],
-            action_id: "filter-action-deal-status",
+            action_id: "filter-forcast-categories",
           },
           {
             type: "static_select",
@@ -376,11 +407,70 @@ const getAppHomeView = (
             ],
             action_id: "filter-action-last-activity",
           },
+          {
+            type: "static_select",
+            placeholder: {
+              type: "plain_text",
+              text: "Forecast Close Date",
+              emoji: true,
+            },
+            options: [
+              {
+                text: {
+                  type: "plain_text",
+                  text: "Tomorrow",
+                  emoji: true,
+                },
+                value: "Tomorrow",
+              },
+              {
+                text: {
+                  type: "plain_text",
+                  text: "Within a week",
+                  emoji: true,
+                },
+                value: "within_week",
+              },
+              {
+                text: {
+                  type: "plain_text",
+                  text: "Within a month",
+                  emoji: true,
+                },
+                value: "within_month",
+              },
+              {
+                text: {
+                  type: "plain_text",
+                  text: "Range",
+                  emoji: true,
+                },
+                value: "range",
+              },
+            ],
+            action_id: "filter-action-close-date",
+          },
+          // {
+          //   type: "datepicker",
+          //   placeholder: {
+          //     type: "plain_text",
+          //     text: "Select close date",
+          //     emoji: true,
+          //   },
+          //   action_id: "close-date",
+          // },
         ],
       },
       ...date_range,
       // Filters End
-      ...getDeals(sort, opp_filter, deal_status_filter, user_filter),
+      ...getDeals(
+        sort,
+        opp_filter,
+        deal_status_filter,
+        user_filter,
+        opp_type,
+        forecast_category
+      ),
       {
         type: "actions",
         elements: [
@@ -436,14 +526,14 @@ const getAppHomeView = (
                 },
                 value: "20",
               },
-              {
-                text: {
-                  type: "plain_text",
-                  text: "50",
-                  emoji: true,
-                },
-                value: "50",
-              },
+              // {
+              //   text: {
+              //     type: "plain_text",
+              //     text: "50",
+              //     emoji: true,
+              //   },
+              //   value: "50",
+              // },
             ],
             action_id: "actionId-3",
           },
@@ -583,7 +673,14 @@ const date_range_filters = [
   },
 ];
 
-const getDeals = (sort, opp_filter, deal_status_filter, user_filter) => {
+const getDeals = (
+  sort,
+  opp_filter,
+  deal_status_filter,
+  user_filter,
+  opp_type,
+  forecast_category
+) => {
   // let channels = [
   //   {
   //     channel_name: "winrate-demo-channel-internal",
@@ -592,6 +689,7 @@ const getDeals = (sort, opp_filter, deal_status_filter, user_filter) => {
   //     status: "Hot",
   //     channel_id: "C079G4507PW",
   //     last_activity: "2024-09-04T11:59:00.000Z"
+  //  close_date: "2024-09-04T11:59:00.000Z"
   //   },
   //   {
   //     channel_name: "winrate-demo-external",
@@ -600,6 +698,7 @@ const getDeals = (sort, opp_filter, deal_status_filter, user_filter) => {
   //     status: "Cold",
   //     channel_id: "C07GX8YMKEY",
   //     last_activity: "2024-08-01T01:20:00.000Z"
+  //  close_date: "2024-08-01T01:20:00.000Z"
   //   },
   //   {
   //     channel_name: "dominos-deal-with-canvas-won",
@@ -608,6 +707,7 @@ const getDeals = (sort, opp_filter, deal_status_filter, user_filter) => {
   //     status: "Cold",
   //     channel_id: "C07CRLE9TC5",
   //     last_activity: "2024-08-27T22:37:00.000Z"
+  //  close_date: "2024-08-27T22:37:00.000Z"
   //   },
   //   {
   //     channel_name: "dell-deal-intarnal",
@@ -616,6 +716,7 @@ const getDeals = (sort, opp_filter, deal_status_filter, user_filter) => {
   //     status: "Hot",
   //     channel_id: "C07JYDLAATX",
   //     last_activity: "2024-09-02T12:18:00.000Z"
+  //  close_date: "2024-09-02T12:18:00.000Z"
   //   },
   //   {
   //     channel_name: "dell-deal-shared",
@@ -624,537 +725,175 @@ const getDeals = (sort, opp_filter, deal_status_filter, user_filter) => {
   //     status: "Hot",
   //     channel_id: "C07H20L2ERZ",
   //     last_activity: "2024-09-01T15:01:05.231Z"
+  //  close_date: "2024-09-01T15:01:05.231Z"
   //   },
   // ];
 
   let channels = [
     {
-      channel_name: "channel-1",
+      channel_name: "Dell Upsell",
       sales_rep: "John Doe",
-      opp_stage: "Prospecting",
-      status: "Hot",
+      opp_stage: "Discovery Call",
+      opportunity_type: "Upsell",
+      forcast_category: "Bouncing ball",
       channel_id: "C079G4507PW",
       last_activity: "2024-09-04T11:59:00.000Z",
+      close_date: "2024-09-05T11:59:00.000Z",
+      deal_value: "$50,000",
+      deal_link: "https://www.dell.com",
+      logo: "https://logo.clearbit.com/dell.com",
+      user_profile:
+        "https://api.slack.com/img/blocks/bkb_template_images/profile_2.png",
+      opp_id: "8371738",
     },
     {
-      channel_name: "channel-2",
+      channel_name: "York New Sale",
       sales_rep: "Adam Smith",
-      opp_stage: "Qualification",
-      status: "Cold",
+      opp_stage: "Demo Scheduled",
+      opportunity_type: "New business",
+      forcast_category: "Bouncing ball",
       channel_id: "C07GX8YMKEY",
       last_activity: "2024-08-01T01:20:00.000Z",
+      close_date: "2024-08-02T01:20:00.000Z",
+      deal_value: "$70,000",
+      deal_link: "https://www.york.ie",
+      logo: "https://logo.clearbit.com/york.ie",
+      user_profile:
+        "https://api.slack.com/img/blocks/bkb_template_images/profile_1.png",
+      opp_id: "8371737",
     },
     {
-      channel_name: "channel-3",
+      channel_name: "Winrate Renewal",
       sales_rep: "Martin Lopez",
-      opp_stage: "Negotiation",
-      status: "Cold",
+      opp_stage: "Discovery call",
+      opportunity_type: "Renewal",
+      forcast_category: "Upside",
       channel_id: "C07CRLE9TC5",
       last_activity: "2024-08-27T22:37:00.000Z",
+      close_date: "2024-08-28T22:37:00.000Z",
+      deal_value: "$900,000",
+      deal_link: "https://www.winrate.com",
+      logo: "https://logo.clearbit.com/winrate.com",
+      user_profile:
+        "https://api.slack.com/img/blocks/bkb_template_images/profile_3.png",
+      opp_id: "2381738",
     },
     {
-      channel_name: "channel-4",
+      channel_name: "Alfa 2024",
       sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Hot",
+      opp_stage: "Demo Scheduled",
+      opportunity_type: "New business",
+      forcast_category: "High potential",
       channel_id: "C07JYDLAATX",
       last_activity: "2024-09-02T12:18:00.000Z",
+      close_date: "2024-09-03T12:18:00.000Z",
+      deal_value: "$100,000",
+      deal_link: "https://www.alfa.com",
+      logo: "https://logo.clearbit.com/alfa.com",
+      user_profile:
+        "https://api.slack.com/img/blocks/bkb_template_images/profile_1.png",
+      opp_id: "7755738",
     },
     {
-      channel_name: "channel-5",
+      channel_name: "Puma Monthly",
       sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Hot",
+      opp_stage: "Proof of concept",
+      opportunity_type: "Renewal",
+      forcast_category: "High potential",
       channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-
-    {
-      channel_name: "channel-6",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Cold",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-7",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Hot",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
+      last_activity: "2024-09-02T15:01:05.231Z",
+      close_date: "2024-09-03T15:01:05.231Z",
+      deal_value: "$50,000",
+      deal_link: "https://www.puma.com",
+      logo: "https://logo.clearbit.com/puma.com",
+      user_profile:
+        "https://api.slack.com/img/blocks/bkb_template_images/profile_2.png",
+      opp_id: "4466553",
     },
     {
-      channel_name: "channel-8",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Cold",
+      channel_name: "Lenovo Upsell",
+      sales_rep: "Martin Lopez",
+      opp_stage: "Proof of concept",
+      opportunity_type: "Upsell",
+      forcast_category: "Commit",
       channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
+      last_activity: "2024-09-04T15:01:05.231Z",
+      close_date: "2024-09-05T15:01:05.231Z",
+      deal_value: "$30,000",
+      deal_link: "https://www.lenovo.com",
+      logo: "https://logo.clearbit.com/lenovo.com",
+      user_profile:
+        "https://api.slack.com/img/blocks/bkb_template_images/profile_3.png",
+      opp_id: "3747582",
     },
     {
-      channel_name: "channel-9",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Hot",
+      channel_name: "Dominos Renewal",
+      sales_rep: "William Brown",
+      opp_stage: "IT/Legal",
+      opportunity_type: "Renewal",
+      forcast_category: "Fulfillment",
       channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
+      last_activity: "2024-09-09T15:01:05.231Z",
+      close_date: "2024-09-10T15:01:05.231Z",
+      deal_value: "$50,000",
+      deal_link: "https://www.dominos.com",
+      logo: "https://logo.clearbit.com/dominos.com",
+      user_profile:
+        "https://api.slack.com/img/blocks/bkb_template_images/profile_4.png",
+      opp_id: "7472374",
     },
     {
-      channel_name: "channel-10",
+      channel_name: "Apple Renewal",
       sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Cold",
+      opp_stage: "IT/Legal",
+      opportunity_type: "Renewal",
+      forcast_category: "Fulfillment",
       channel_id: "C07H20L2ERZ",
       last_activity: "2024-09-01T15:01:05.231Z",
+      close_date: "2024-09-01T15:01:05.231Z",
+      deal_value: "$500,000",
+      deal_link: "https://www.apple.com",
+      logo: "https://logo.clearbit.com/apple.com",
+      user_profile:
+        "https://api.slack.com/img/blocks/bkb_template_images/profile_1.png",
+      opp_id: "7755555",
     },
     {
-      channel_name: "channel-11",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Hot",
+      channel_name: "Samsung 2024",
+      sales_rep: "Mark Jones",
+      opp_stage: "Out for signature",
+      opportunity_type: "New business",
+      forcast_category: "Fulfillment",
       channel_id: "C07H20L2ERZ",
       last_activity: "2024-09-01T15:01:05.231Z",
+      close_date: "2024-09-01T15:01:05.231Z",
+      deal_value: "$540,000",
+      deal_link: "https://www.samsung.com",
+      logo: "https://logo.clearbit.com/samsung.com",
+      user_profile:
+        "https://api.slack.com/img/blocks/bkb_template_images/profile_2.png",
+      opp_id: "76537775",
     },
     {
-      channel_name: "channel-12",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Cold",
+      channel_name: "Oppo 2024",
+      sales_rep: "Mark Jones",
+      opp_stage: "Out for signature",
+      opportunity_type: "Upsell",
+      forcast_category: "Fulfillment",
       channel_id: "C07H20L2ERZ",
       last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-13",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Hot",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-14",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Cold",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-15",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Hot",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-16",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Cold",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-17",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Hot",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-18",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Cold",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-19",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Hot",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-20",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Cold",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-21",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Hot",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-22",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Cold",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-23",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Hot",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-24",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Cold",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-25",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Hot",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-26",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Cold",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-27",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Hot",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-28",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Cold",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-29",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Hot",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-30",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Cold",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-31",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Hot",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-32",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Cold",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-33",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Hot",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-34",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Cold",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-35",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Hot",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-36",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Cold",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-37",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Hot",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-38",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Cold",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-39",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Hot",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-40",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Cold",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-41",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Hot",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-42",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Cold",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-43",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Hot",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-44",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Cold",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-45",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Hot",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-46",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Cold",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-47",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Hot",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-48",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Cold",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-49",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Hot",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-50",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Cold",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-51",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Hot",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-52",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Cold",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-53",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Hot",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-54",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Cold",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-55",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Hot",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-56",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Cold",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-57",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Hot",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-58",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Cold",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-59",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Hot",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-60",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Cold",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-61",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Hot",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-62",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Cold",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-63",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Hot",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-64",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Cold",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
-    },
-    {
-      channel_name: "channel-65",
-      sales_rep: "Jack Doe",
-      opp_stage: "Negotiation",
-      status: "Hot",
-      channel_id: "C07H20L2ERZ",
-      last_activity: "2024-09-01T15:01:05.231Z",
+      close_date: "2024-09-01T15:01:05.231Z",
+      deal_value: "$110,000",
+      deal_link: "https://www.oppo.com",
+      logo: "https://logo.clearbit.com/oppo.com",
+      user_profile:
+        "https://api.slack.com/img/blocks/bkb_template_images/profile_2.png",
+      opp_id: "3333534",
     },
   ];
 
   if (opp_filter && opp_filter.value != "all") {
-    channels = channels.filter(
-      (v) => v.opp_stage.toLowerCase() === opp_filter.value
-    );
+    channels = channels.filter((v) => v.opp_stage === opp_filter.value);
   }
   if (deal_status_filter && deal_status_filter.value != "all") {
     channels = channels.filter(
@@ -1164,38 +903,203 @@ const getDeals = (sort, opp_filter, deal_status_filter, user_filter) => {
   if (user_filter && user_filter.value != "all") {
     channels = channels.filter((v) => v.sales_rep === user_filter.value);
   }
+  if (opp_type && opp_type.value != "all") {
+    channels = channels.filter((v) => v.opportunity_type === opp_type.value);
+  }
+  if (forecast_category && forecast_category.value != "all") {
+    channels = channels.filter(
+      (v) => v.forcast_category === forecast_category.value
+    );
+  }
   const column = sort ? sort.value : "channel_name"; // Set default sorting
-  channels.sort((a, b) =>
-    a[column] > b[column] ? 1 : b[column] > a[column] ? -1 : 0
-  );
+  console.log("column:", column);
+  channels.sort((a, b) => {
+    let a_value = a[column];
+    console.log("channels.sort  a_value:", a_value);
+    let b_value = b[column];
+    console.log("channels.sort  b_value:", b_value);
+    if (column === "last_activity" || column === "close_date") {
+      console.log("-----------------------------");
+      a_value = new Date(a_value);
+      console.log("channels.sort if a_value:", a_value);
+      b_value = new Date(b_value);
+      console.log("channels.sort if b_value:", b_value);
+    }
+    return a_value > b_value ? 1 : b_value > a_value ? -1 : 0;
+  });
 
   let status = {
     Hot: ":fire:",
     Cold: ":snowflake:",
   };
-  const deals = channels.map((v) => {
+  const dealsOld = channels.map((v) => {
     return {
       type: "section",
       text: {
         type: "mrkdwn",
-        text: `*#${v.channel_name}* - ${v.sales_rep} - <https://google.com|Deal Link> - ${v.opp_stage} - ${
-          status[v.status]
-        } - ${new Date(v.last_activity).toLocaleDateString()} ${new Date(
+        text: `*<https://google.com|${v.channel_name}>* - ${v.sales_rep} - ${
+          v.opp_stage
+        } - ${v.deal_value} - ${v.forcast_category} - ${new Date(
+          v.last_activity
+        ).toLocaleDateString()} - ${new Date(
+          v.last_activity
+        ).toLocaleDateString()} ${new Date(
           v.last_activity
         ).toLocaleTimeString()}`,
       },
       accessory: {
-        type: "button",
-        text: {
+        type: "static_select",
+        placeholder: {
           type: "plain_text",
-          text: "Join",
+          text: "Select Action",
           emoji: true,
         },
-        value: v.channel_id,
-        action_id: "join-channel",
-        style: "primary",
+        options: [
+          {
+            text: {
+              type: "plain_text",
+              text: "Edit opportunity",
+              emoji: true,
+            },
+            value: "edit",
+          },
+          {
+            text: {
+              type: "plain_text",
+              text: "Join",
+              emoji: true,
+            },
+            value: "join",
+          },
+          {
+            text: {
+              type: "plain_text",
+              text: "Launch External",
+              emoji: true,
+            },
+            value: "launch",
+          },
+          {
+            text: {
+              type: "plain_text",
+              text: "Generate AI Summary",
+              emoji: true,
+            },
+            value: "ai-summary",
+          },
+        ],
+        action_id: "dealroom-action",
       },
     };
+  });
+  const deals = [];
+  channels.map((v) => {
+    deals.push(
+      {
+        type: "divider",
+      },
+      {
+        type: "context",
+        elements: [
+          {
+            type: "mrkdwn",
+            text: "Opportunity Owner",
+          },
+          {
+            type: "image",
+            image_url: v.user_profile,
+            alt_text: v.sales_rep,
+          },
+          {
+            type: "mrkdwn",
+            text: `*${v.sales_rep}*`,
+          },
+        ],
+      },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `*<${v.deal_link}|${v.channel_name}>*`,
+        },
+        fields: [
+          {
+            type: "mrkdwn",
+            text: `*Opportunity Stage:*\n${v.opp_stage}`,
+          },
+          {
+            type: "mrkdwn",
+            text: `*Opportunity Value:*\n${v.deal_value}`,
+          },
+          {
+            type: "mrkdwn",
+            text: `*Forecast Category:*\n${v.forcast_category}`,
+          },
+          {
+            type: "mrkdwn",
+            text: `*Forecast Close Date:*\n${new Date(
+              v.last_activity
+            ).toLocaleDateString()}`,
+          },
+          {
+            type: "mrkdwn",
+            text: `*Opportunity Type:*\n${v.opportunity_type}`,
+          },
+          {
+            type: "mrkdwn",
+            text: `*Last Activity:*\n${new Date(
+              v.last_activity
+            ).toLocaleDateString()} - ${new Date(
+              v.last_activity
+            ).toLocaleTimeString()}`,
+          },
+          {
+            type: "mrkdwn",
+            text: `*Opportunity ID:*\n${v.opp_id}`,
+          },
+        ],
+        accessory: {
+          type: "image",
+          image_url: v.logo,
+          alt_text: "credit card",
+        },
+      },
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: "Join",
+              emoji: true,
+            },
+            style: "primary",
+            value: "join",
+            action_id: "join",
+          },
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: "View AI Summary",
+              emoji: true,
+            },
+            value: "AI Summary",
+          },
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: "Edit Opportunity",
+              emoji: true,
+            },
+            value: "edit",
+            action_id: "edit",
+          },
+        ],
+      }
+    );
   });
   return deals;
 };
@@ -1225,14 +1129,6 @@ const getUsers = (team_filter) => {
         emoji: true,
       },
       value: "William Brown",
-    },
-    {
-      text: {
-        type: "plain_text",
-        text: "Johnn Doe",
-        emoji: true,
-      },
-      value: "Johnn Doe",
     },
     {
       text: {
@@ -1268,7 +1164,7 @@ const getUsers = (team_filter) => {
       type: "static_select",
       placeholder: {
         type: "plain_text",
-        text: "User",
+        text: "Sales Rep",
         emoji: true,
       },
       options: users,
@@ -1327,4 +1223,119 @@ const successView = (message) => {
   };
 };
 
-module.exports = { getAppHomeView, errorView, successView };
+const editDealBlocks = () => {
+  return {
+    type: "modal",
+    title: {
+      type: "plain_text",
+      text: "Edit Opportunity",
+      emoji: true,
+    },
+    submit: {
+      type: "plain_text",
+      text: "Save",
+      emoji: true,
+    },
+    close: {
+      type: "plain_text",
+      text: "Cancel",
+      emoji: true,
+    },
+    blocks: [
+      {
+        type: "input",
+        element: {
+          type: "plain_text_input",
+          action_id: "plain_text_input-action",
+          placeholder: {
+            type: "plain_text",
+            text: "Enter Amount",
+            emoji: true,
+          },
+        },
+        label: {
+          type: "plain_text",
+          text: "Deal Size",
+          emoji: true,
+        },
+      },
+      {
+        type: "input",
+        element: {
+          type: "static_select",
+          placeholder: {
+            type: "plain_text",
+            text: "Select an item",
+            emoji: true,
+          },
+          options: [
+            {
+              text: {
+                type: "plain_text",
+                text: "Prospecting",
+                emoji: true,
+              },
+              value: "value-0",
+            },
+            {
+              text: {
+                type: "plain_text",
+                text: "Negotiation",
+                emoji: true,
+              },
+              value: "value-1",
+            },
+            {
+              text: {
+                type: "plain_text",
+                text: "Qualification",
+                emoji: true,
+              },
+              value: "value-2",
+            },
+            {
+              text: {
+                type: "plain_text",
+                text: "Won",
+                emoji: true,
+              },
+              value: "value-3",
+            },
+            {
+              text: {
+                type: "plain_text",
+                text: "Lost",
+                emoji: true,
+              },
+              value: "value-4",
+            },
+          ],
+          action_id: "static_select-action",
+        },
+        label: {
+          type: "plain_text",
+          text: "Opportunity Stage",
+          emoji: true,
+        },
+      },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "*Pick a close date*",
+        },
+        accessory: {
+          type: "datepicker",
+          placeholder: {
+            type: "plain_text",
+            text: "Select a date",
+            emoji: true,
+          },
+          action_id: "datepicker-action",
+        },
+      },
+    ],
+  };
+};
+
+module.exports = { getAppHomeView, errorView, successView, editDealBlocks };
