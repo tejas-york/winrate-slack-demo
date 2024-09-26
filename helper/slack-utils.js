@@ -912,18 +912,12 @@ const getDeals = (
     );
   }
   const column = sort ? sort.value : "channel_name"; // Set default sorting
-  console.log("column:", column);
   channels.sort((a, b) => {
     let a_value = a[column];
-    console.log("channels.sort  a_value:", a_value);
     let b_value = b[column];
-    console.log("channels.sort  b_value:", b_value);
     if (column === "last_activity" || column === "close_date") {
-      console.log("-----------------------------");
       a_value = new Date(a_value);
-      console.log("channels.sort if a_value:", a_value);
       b_value = new Date(b_value);
-      console.log("channels.sort if b_value:", b_value);
     }
     return a_value > b_value ? 1 : b_value > a_value ? -1 : 0;
   });
@@ -1337,5 +1331,25 @@ const editDealBlocks = () => {
     ],
   };
 };
+/* Decode JWT payload */
+const parseJwt = (token) => {
+  var base64Url = token.split(".")[1];
+  var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  var jsonPayload = decodeURIComponent(
+    atob(base64)
+      .split("")
+      .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+      .join("")
+  );
 
-module.exports = { getAppHomeView, errorView, successView, editDealBlocks };
+  const payload = JSON.parse(jsonPayload);
+  return payload;
+};
+
+module.exports = {
+  getAppHomeView,
+  errorView,
+  successView,
+  editDealBlocks,
+  parseJwt,
+};

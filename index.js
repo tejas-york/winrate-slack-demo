@@ -21,6 +21,7 @@ const joinChannel = require("./controllers/joinChannel");
 // const uploadCommand = require("./controllers/uploadCommand");
 const handleSlackActions = require("./controllers/handleSlackActions");
 const handleSlackOauthRedirect = require("./controllers/handleSlackOauthRedirect");
+const generateSummary = require("./controllers/generateSummary");
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -31,7 +32,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use(express.static(path.join(__dirname, "public")));
 
-/* View Routes */
+/* View Routes (Render EJS files) */
 app.get("/document-picker", (_, res) => res.render("docPicker"));
 app.get("/create-channel", (_, res) => res.render("createChannel"));
 app.get("/latest-messages", (_, res) => res.render("sharedLinks"));
@@ -63,6 +64,7 @@ app.get("/api/search", searchMessages);
 app.put("/api/join-channel/:channel", joinChannel);
 app.post("/api/handle-slack-actions", handleSlackActions)
 app.get("/api/handle-slack-oauth-redirect", handleSlackOauthRedirect)
+app.post("/api/generate-summary", generateSummary)
 
 var port = normalizePort(process.env.PORT || "3000");
 app.set("port", port);

@@ -1,35 +1,32 @@
-const { slackApp, slackUserApp, slackEnterpriseApp, slackEnterpriseUserApp } = require(".");
+const {
+  slackUserApp,
+} = require(".");
+const { parseJwt } = require("../helper/slack-utils");
 
 /* Search messages globally */
 const handleSlackOauthRedirect = async (req, res) => {
   try {
+    const client_id = process.env.SLACK_CLIENT_ID,
+      client_secret = process.env.SLACK_CLIENT_SECRET;
     console.log(
-      "handleSlackOauthRedirect  process.env.SLACK_ENTERPRISE_CLIENT_ID:",
-      process.env.SLACK_ENTERPRISE_CLIENT_ID
+      "handleSlackOauthRedirect  process.env.SLACK_CLIENT_ID:",
+      process.env.SLACK_CLIENT_ID
     );
     console.log(
-      "handleSlackOauthRedirect  process.env.SLACK_ENTERPRISE_CLIENT_SECRET:",
-      process.env.SLACK_ENTERPRISE_CLIENT_SECRET
+      "handleSlackOauthRedirect  process.env.SLACK_CLIENT_SECRET:",
+      process.env.SLACK_CLIENT_SECRET
     );
     const { code } = req.query;
     if (req.query.code) {
-      const oauthV2 = await slackEnterpriseUserApp.client.oauth.v2.access({
-        client_id: process.env.SLACK_ENTERPRISE_CLIENT_ID,
-        client_secret: process.env.SLACK_ENTERPRISE_CLIENT_SECRET,
-        redirect_uri: "http://localhost:3000/api/handle-slack-oauth-redirect",
+      const openid = await slackUserApp.client.openid.connect.token({
         code,
+        client_id,
+        client_secret,
+        redirect_uri: "http://localhost:3000/api/handle-slack-oauth-redirect",
       });
-      console.log("handleSlackOauthRedirect  oauthV2:", oauthV2);
-      const users = oauthV2.authed_user.id;
-      console.log("handleSlackOauthRedirect  users:", users);
-      const invite = await slackEnterpriseUserApp.client.admin.conversations.invite({
-        channel_id: "C07JDCDDADP",
-        user_ids: users,
-      });
-      console.log("handleSlackOauthRedirect  invite:", invite);
-      return res.redirect(
-        `https://slack.com/app_redirect?team=T07HMMLNJUT&channel=C07JDCDDADP`
-      );
+      const decoded = parseJwt(openid.id_token);
+
+      res.status(200).json({ openid, decoded });
     } else {
       return res.status(200).json({
         message: "Successfully handled oauth...",
